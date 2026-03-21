@@ -2,6 +2,8 @@
 
 Interactive 3D cardiac anatomy viewer for mapping premature ventricular contraction (PVC) origins to 12-lead ECG morphologies. Built for electrophysiology education.
 
+![PVC Heart Tool Screenshot](docs/screenshot.png)
+
 ## Quick Start
 
 ```bash

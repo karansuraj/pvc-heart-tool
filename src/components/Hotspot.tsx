@@ -8,9 +8,10 @@ interface HotspotProps {
   origin: PVCOrigin;
   isSelected: boolean;
   onClick: (id: string) => void;
+  onHover?: (id: string | null) => void;
 }
 
-export function Hotspot({ origin, isSelected, onClick }: HotspotProps) {
+export function Hotspot({ origin, isSelected, onClick, onHover }: HotspotProps) {
   const meshRef = useRef<THREE.Mesh>(null);
   const glowRef = useRef<THREE.Mesh>(null);
   const [hovered, setHovered] = useState(false);
@@ -36,10 +37,12 @@ export function Hotspot({ origin, isSelected, onClick }: HotspotProps) {
         onPointerEnter={(e) => {
           e.stopPropagation();
           setHovered(true);
+          onHover?.(origin.id);
           document.body.style.cursor = "pointer";
         }}
         onPointerLeave={() => {
           setHovered(false);
+          onHover?.(null);
           document.body.style.cursor = "auto";
         }}
         // Raycast against a slightly larger invisible sphere for easier clicking

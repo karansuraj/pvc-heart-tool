@@ -21,6 +21,12 @@ function getOriginName(id: string): string {
   return origin?.name ?? id;
 }
 
+/** Get the hotspot color for an origin ID */
+function getOriginColor(id: string): string {
+  const origin = pvcOrigins.find((o) => o.id === id);
+  return origin?.hotspotColor ?? "#888";
+}
+
 export function MappingPanel({
   pendingPosition,
   mappedPositions,
@@ -153,11 +159,13 @@ export function MappingPanel({
               <div style={{ display: "flex", alignItems: "center", gap: "6px", flex: 1, minWidth: 0 }}>
                 <span
                   style={{
-                    width: "6px",
-                    height: "6px",
+                    width: "8px",
+                    height: "8px",
                     borderRadius: "50%",
-                    background: pos ? "#4c8" : "#444",
+                    background: getOriginColor(id),
+                    opacity: pos ? 1 : 0.35,
                     flexShrink: 0,
+                    boxShadow: pos ? `0 0 4px ${getOriginColor(id)}60` : "none",
                   }}
                 />
                 <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>

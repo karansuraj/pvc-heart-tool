@@ -15,12 +15,11 @@ import { listModelConfigs, getModelConfig, activeModelId as defaultModelId } fro
 interface HeartViewerProps {
   selectedId: string | null;
   onSelectRegion: (id: string) => void;
+  onHoverRegion?: (id: string | null) => void;
   mappingMode?: boolean;
   onMappingClick?: (position: [number, number, number]) => void;
   mappedPositions?: Record<string, [number, number, number] | null>;
-  /** The last clicked pending position in mapping mode */
   pendingPosition?: [number, number, number] | null;
-  /** Current model ID — parent controls this for mapping mode */
   modelId?: string;
   onModelChange?: (id: string) => void;
 }
@@ -30,6 +29,7 @@ export function HeartViewer({
   onSelectRegion,
   mappingMode = false,
   onMappingClick,
+  onHoverRegion,
   mappedPositions,
   pendingPosition,
   modelId,
@@ -129,6 +129,7 @@ export function HeartViewer({
                   origin={{ ...origin, hotspotPosition: pos }}
                   isSelected={selectedId === origin.id}
                   onClick={onSelectRegion}
+                  onHover={onHoverRegion}
                 />
               );
             });
@@ -139,17 +140,19 @@ export function HeartViewer({
           <>
             <SurfacePointer onHoverPosition={setHoverPosition} />
 
-            {/* Assigned mapping markers (green) — always visible on top */}
+            {/* Assigned mapping markers — use origin's color, always on top */}
             {mappedPositions &&
               Object.entries(mappedPositions).map(([id, pos]) => {
                 if (!pos) return null;
+                const origin = pvcOrigins.find((o) => o.id === id);
+                const color = origin?.hotspotColor ?? "#44cc88";
                 return (
                   <group key={id} position={pos} raycast={() => null}>
                     {/* Outer glow ring */}
                     <mesh raycast={() => null}>
                       <sphereGeometry args={[0.05, 16, 16]} />
                       <meshBasicMaterial
-                        color="#44cc88"
+                        color={color}
                         transparent
                         opacity={0.3}
                         depthTest={false}
@@ -159,7 +162,7 @@ export function HeartViewer({
                     <mesh raycast={() => null}>
                       <sphereGeometry args={[0.025, 12, 12]} />
                       <meshBasicMaterial
-                        color="#44cc88"
+                        color={color}
                         depthTest={false}
                       />
                     </mesh>

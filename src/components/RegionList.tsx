@@ -2,11 +2,12 @@ import { pvcOrigins, getCategories } from "../data/pvcOrigins";
 
 interface RegionListProps {
   selectedId: string | null;
+  hoveredId?: string | null;
   onSelectRegion: (id: string) => void;
   onOpenDetail: (id: string) => void;
 }
 
-export function RegionList({ selectedId, onSelectRegion, onOpenDetail }: RegionListProps) {
+export function RegionList({ selectedId, hoveredId, onSelectRegion, onOpenDetail }: RegionListProps) {
   const categories = getCategories();
 
   return (
@@ -30,6 +31,7 @@ export function RegionList({ selectedId, onSelectRegion, onOpenDetail }: RegionL
             </div>
             {origins.map((origin) => {
               const isSelected = selectedId === origin.id;
+              const isHovered = hoveredId === origin.id;
               return (
                 <div
                   key={origin.id}
@@ -38,14 +40,19 @@ export function RegionList({ selectedId, onSelectRegion, onOpenDetail }: RegionL
                     alignItems: "center",
                     margin: "1px 0",
                     borderRadius: "4px",
-                    background: isSelected ? `${origin.hotspotColor}18` : "transparent",
+                    background: isSelected
+                      ? `${origin.hotspotColor}18`
+                      : isHovered
+                      ? `${origin.hotspotColor}12`
+                      : "transparent",
                     transition: "all 0.15s ease",
+                    outline: isHovered && !isSelected ? `1px solid ${origin.hotspotColor}40` : "none",
                   }}
                   onMouseEnter={(e) => {
-                    if (!isSelected) e.currentTarget.style.background = "#f5f5f5";
+                    if (!isSelected && !isHovered) e.currentTarget.style.background = "#f5f5f5";
                   }}
                   onMouseLeave={(e) => {
-                    if (!isSelected) e.currentTarget.style.background = "transparent";
+                    if (!isSelected && !isHovered) e.currentTarget.style.background = "transparent";
                   }}
                 >
                   {/* Main clickable area — selects + highlights on heart */}

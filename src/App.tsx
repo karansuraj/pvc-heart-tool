@@ -10,6 +10,7 @@ import { getModelConfig, blankHotspots, activeModelId as defaultModelId } from "
 
 function App() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
   const detailOrigin = detailId ? getOriginById(detailId) : null;
 
@@ -53,6 +54,7 @@ function App() {
       <HeartViewer
         selectedId={selectedId}
         onSelectRegion={(id) => { setSelectedId(id); setDetailId(id); }}
+        onHoverRegion={setHoveredId}
         mappingMode={mappingMode}
         onMappingClick={handleMappingClick}
         mappedPositions={mappedPositions}
@@ -211,6 +213,7 @@ function App() {
           >
             <RegionList
               selectedId={selectedId}
+              hoveredId={hoveredId}
               onSelectRegion={setSelectedId}
               onOpenDetail={(id) => { setSelectedId(id); setDetailId(id); }}
             />

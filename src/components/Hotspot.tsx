@@ -67,6 +67,7 @@ export function Hotspot({ origin, isSelected, onClick }: HotspotProps) {
         <Html
           position={[0, 0.12, 0]}
           center
+          zIndexRange={[50, 0]}
           style={{
             pointerEvents: "none",
             whiteSpace: "nowrap",

@@ -85,20 +85,40 @@ const heartCurrent: ModelConfig = {
   scale: null,
   positionOffset: null,
   hotspotPositions: {
+    // RVOT
     "rvot-septal": [-0.275, 0.371, 0.094],
     "rvot-freewall": [-0.051, -0.043, -0.060],
+    "rvot-anterior": [-0.160, 0.300, -0.050],
+    "rvot-posterior": [-0.320, 0.410, 0.180],
+    // LVOT / Aortic Cusps
     "lvot-lcc": [-0.380, 0.360, 0.394],
     "lvot-rcc": [0.064, -0.220, 0.124],
+    "lvot-lcc-rcc": [-0.160, 0.280, 0.310],
+    "aortic-lcc": [-0.420, 0.420, 0.350],
+    "aortic-rcc": [-0.200, 0.340, 0.200],
     "aortic-ncc": [0.446, -0.746, -0.479],
+    // Mitral Annulus
     "mitral-anterior": [-0.175, -0.252, 0.138],
     "mitral-posterior": [0.296, -0.225, -0.207],
+    "mitral-lateral": [0.180, -0.300, 0.060],
+    // Tricuspid Annulus
     "tricuspid-septal": [0.030, 0.273, -0.194],
+    "tricuspid-anterior": [-0.080, 0.180, -0.280],
+    "tricuspid-posterior": [0.120, 0.200, -0.100],
+    // Papillary Muscles (LV)
     "papillary-anterolateral": [0.033, -0.018, -0.238],
     "papillary-posteromedial": [0.086, -0.165, -0.068],
+    // Papillary Muscles (RV)
+    "papillary-rv-anterior": [-0.180, -0.120, -0.150],
+    "papillary-rv-posterior": [-0.100, -0.200, 0.050],
+    "papillary-rv-septal": [-0.140, 0.150, -0.100],
+    // LV Summit
     "lv-summit-gcv": [-0.549, 0.812, -0.024],
+    "lv-summit-aiv": [-0.480, 0.750, 0.100],
+    // Other
     "his-bundle": [-0.105, 0.509, -0.381],
     "moderator-band": [-0.255, -0.059, 0.091],
-    "crux": [-0.291, 0.182, 0.043]
+    "crux": [-0.291, 0.182, 0.043],
   }
 };
 

@@ -50,6 +50,8 @@ export const CameraController = forwardRef<CameraControllerHandle, Props>(
 
     const zoomTarget = useRef<number | null>(null);
     const flyTarget = useRef<{ pos: THREE.Vector3; target: THREE.Vector3 } | null>(null);
+    /** Target horizontal angle for spin-to — null = no active spin */
+    const spinTarget = useRef<number | null>(null);
 
     // Apply saved default view on mount
     useEffect(() => {
@@ -101,32 +103,11 @@ export const CameraController = forwardRef<CameraControllerHandle, Props>(
         const controls = controlsRef.current;
         if (!controls) return;
 
-        // Horizontal-only rotation: keep current distance, height, and orbit target
-        const pointVec = new THREE.Vector3(...point);
-        const currentOffset = new THREE.Vector3().subVectors(camera.position, controls.target);
-        const currentY = currentOffset.y;
-
-        // Get current horizontal distance from target
-        const horizOffset = new THREE.Vector2(currentOffset.x, currentOffset.z);
-        const horizDist = horizOffset.length();
-
-        // Direction from orbit center to the hotspot (horizontal only)
-        const dir = new THREE.Vector2(
-          pointVec.x - controls.target.x,
-          pointVec.z - controls.target.z,
-        ).normalize();
-
-        // Place camera on the opposite side, same horizontal distance, same height
-        const camPos = new THREE.Vector3(
-          controls.target.x + dir.x * horizDist,
-          controls.target.y + currentY,
-          controls.target.z + dir.y * horizDist,
-        );
-
-        flyTarget.current = {
-          pos: camPos,
-          target: controls.target.clone(),
-        };
+        // Just compute the horizontal angle from orbit center to the hotspot
+        // and spin the camera to that angle — nothing else changes
+        const dx = point[0] - controls.target.x;
+        const dz = point[2] - controls.target.z;
+        spinTarget.current = Math.atan2(dx, dz);
       },
       saveAsDefault() {
         const controls = controlsRef.current;
@@ -157,6 +138,7 @@ export const CameraController = forwardRef<CameraControllerHandle, Props>(
         controls.update();
       }
 
+      // Smooth fly-to (used for resetView)
       if (flyTarget.current) {
         const { pos, target } = flyTarget.current;
         const speed = Math.min(1, delta * 5);
@@ -168,6 +150,33 @@ export const CameraController = forwardRef<CameraControllerHandle, Props>(
           controls.target.copy(target);
           flyTarget.current = null;
         }
+        controls.update();
+      }
+
+      // Spin to face hotspot — only changes horizontal angle, nothing else
+      if (spinTarget.current !== null) {
+        const offset = new THREE.Vector3().subVectors(camera.position, controls.target);
+        const horizDist = Math.sqrt(offset.x * offset.x + offset.z * offset.z);
+        const currentAngle = Math.atan2(offset.x, offset.z);
+        const targetAngle = spinTarget.current;
+
+        // Shortest path rotation
+        let angleDiff = targetAngle - currentAngle;
+        while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
+        while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
+
+        if (Math.abs(angleDiff) < 0.005) {
+          // Snap to final angle
+          offset.x = Math.sin(targetAngle) * horizDist;
+          offset.z = Math.cos(targetAngle) * horizDist;
+          spinTarget.current = null;
+        } else {
+          const newAngle = currentAngle + angleDiff * Math.min(1, delta * 5);
+          offset.x = Math.sin(newAngle) * horizDist;
+          offset.z = Math.cos(newAngle) * horizDist;
+        }
+        // Y stays exactly the same
+        camera.position.copy(controls.target).add(offset);
         controls.update();
       }
     });

@@ -52,7 +52,7 @@ function App() {
     <div style={{ width: "100%", height: "100%" }}>
       <HeartViewer
         selectedId={selectedId}
-        onSelectRegion={setSelectedId}
+        onSelectRegion={(id) => { setSelectedId(id); setDetailId(id); }}
         mappingMode={mappingMode}
         onMappingClick={handleMappingClick}
         mappedPositions={mappedPositions}

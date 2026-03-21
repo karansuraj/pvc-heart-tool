@@ -41,7 +41,7 @@ export function HeartViewer({
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [visualSettings, setVisualSettings] = useState<VisualSettingsState>(DEFAULT_VISUAL_SETTINGS);
 
-  const [focusOnSelect, setFocusOnSelect] = useState(true);
+  const [focusOnSelect, setFocusOnSelect] = useState(false);
   const [hoverPosition, setHoverPosition] = useState<[number, number, number] | null>(null);
 
   const [internalModelId, setInternalModelId] = useState(defaultModelId);

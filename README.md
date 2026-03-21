@@ -79,6 +79,60 @@ Maps PVC origin hotspot positions to any heart model — no code changes needed.
 - **three-mesh-bvh** — BVH acceleration for fast raycasting on high-poly models
 - **Vite** — dev server and build
 
+## Deploying to Vercel
+
+### Prerequisites
+
+- [Vercel CLI](https://vercel.com/docs/cli): `npm install -g vercel`
+- Authenticate: `vercel login`
+
+### First-time setup
+
+```bash
+vercel --prod --yes
+```
+
+This will:
+1. Create a Vercel project linked to the repo
+2. Upload source + model files (under 100MB each)
+3. Run `npm run build` on Vercel's servers
+4. Deploy to a `.vercel.app` URL
+
+### Subsequent deploys
+
+```bash
+vercel --prod --yes
+```
+
+Or connect the GitHub repo for auto-deploys (Vercel dashboard → Project Settings → Git → Connect).
+
+### Model file limits
+
+Vercel has a **100MB per-file limit** for static assets. The `.vercelignore` file excludes any models over this limit (e.g. `heart-0.glb` at 116MB).
+
+| File | Size | Deployed? |
+|------|------|-----------|
+| `heart.glb` | 34MB | Yes |
+| `heart-0.glb` | 116MB | No — exceeds limit, excluded via `.vercelignore` |
+| `heart-1.glb` | 4.2MB | Yes |
+| `heart-2.glb` | 751K | Yes |
+
+Model files are served via Vercel's CDN with 1-year cache headers (`vercel.json`).
+
+### For oversized models
+
+If you need to deploy models over 100MB:
+- **Vercel Blob Storage** — upload via `vercel blob` CLI, load from URL
+- **Cloudflare R2** — free egress, cheapest CDN option
+- **AWS S3 + CloudFront** — standard approach
+- **Optimize the model** — Draco compression can reduce file size significantly
+
+### Current deployment
+
+Live at: **https://pvc-heart-tool.vercel.app**
+
+---
+
 ## Key Design Decisions
 
 - **Hotspot overlay approach** — clickable markers placed at 3D coordinates, not mesh segmentation. Works with any single-mesh heart model. See `Guide-3D-Model-Preparation.md` for alternatives.

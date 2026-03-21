@@ -76,9 +76,9 @@ const heartCurrent: ModelConfig = {
     "papillary-anterolateral": [0.033, -0.018, -0.238],
     "papillary-posteromedial": [0.086, -0.165, -0.068],
     "lv-summit-gcv": [-0.549, 0.812, -0.024],
-    "his-bundle": null,
+    "his-bundle": [-0.105, 0.509, -0.381],
     "moderator-band": [-0.255, -0.059, 0.091],
-    "crux": [-0.291, 0.182, 0.043],
+    "crux": [-0.291, 0.182, 0.043]
   }
 };
 

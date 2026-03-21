@@ -131,6 +131,7 @@ Models are gitignored and Draco-compressed for deployment. Drei's `useGLTF` has 
 - [x] ECG modal expansion
 - [x] Vercel deployment
 - [x] GitHub repo
+- [x] Collated REFERENCES.md with all peer-reviewed citations, ECG sources, and mapping references
 
 ### Remaining
 - [ ] EP physician validation of all clinical content (all 23 entries are "draft")
@@ -147,8 +148,38 @@ Models are gitignored and Draco-compressed for deployment. Drei's `useGLTF` has 
 - All clinical data in `src/data/` (single source of truth)
 - R3F patterns: `useFrame` for animation, `useGLTF` for models, `forwardRef` + `useImperativeHandle` for camera control
 
+## Reference Maintenance (MANDATORY)
+
+All peer-reviewed literature, textbook citations, ECG profile sources, and anatomical mapping references are collated in `REFERENCES.md`. **Any agent that adds, modifies, or removes a reference anywhere in this project MUST update `REFERENCES.md` to stay in sync.**
+
+### When to update REFERENCES.md
+
+- Adding a new PVC origin with `references[]` entries
+- Adding or changing a reference on an existing PVC origin in `pvcOrigins.ts`
+- Adding new ECG profile source citations in `ecgProfiles.ts` header comments
+- Adding anatomical/mapping references in `heart-models.md`
+- Citing any peer-reviewed paper, textbook, or educational resource anywhere in the project
+
+### How to update
+
+1. Add a row to the appropriate topic table in `REFERENCES.md` (key, full citation, DOI, "Used By" origins)
+2. If it's a new topic area, add a new subsection under "Peer-Reviewed Literature"
+3. If updating an existing citation (e.g., correcting authors or DOI), update both the source file and `REFERENCES.md`
+4. Verify DOI links resolve when adding new entries
+
+### Canonical data flow
+
+```
+pvcOrigins.ts (references[] arrays)  ─┐
+ecgProfiles.ts (header comments)      ├──▶  REFERENCES.md
+heart-models.md (mapping references)  ─┘
+```
+
+The source of truth for per-origin citations is `pvcOrigins.ts`. `REFERENCES.md` is the collated, human-readable index for reviewers and collaborators.
+
 ## Documentation Files
 - `CLAUDE.md` — This file. Agent context and instructions.
+- `REFERENCES.md` — **Complete bibliography**: all peer-reviewed citations, ECG sources, mapping references, model attributions
 - `PVC-Heart-Visualization-Project-Plan.md` — Full project plan, architecture, progress log
 - `Guide-3D-Model-Preparation.md` — How to prepare heart models (hotspot vs segmentation approaches)
 - `heart-models.md` — Curated links to heart models, ECG references, mapping guide

@@ -144,6 +144,7 @@ Live at: **https://pvc-heart-tool.vercel.app**
 
 ## Documentation
 
+- [`REFERENCES.md`](./REFERENCES.md) — **Complete bibliography**: all peer-reviewed citations, ECG profile sources, anatomical mapping references, and 3D model attributions
 - [`PVC-Heart-Visualization-Project-Plan.md`](./PVC-Heart-Visualization-Project-Plan.md) — Full project plan, architecture, clinical accuracy requirements, progress log
 - [`Guide-3D-Model-Preparation.md`](./Guide-3D-Model-Preparation.md) — How to prepare and evaluate heart models (hotspot vs segmentation approaches)
 - [`heart-models.md`](./heart-models.md) — Curated links to free heart 3D models (external surface + cross-sectional)

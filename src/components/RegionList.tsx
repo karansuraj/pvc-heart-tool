@@ -1,3 +1,4 @@
+import { useRef, useEffect } from "react";
 import { pvcOrigins, getCategories } from "../data/pvcOrigins";
 
 interface RegionListProps {
@@ -8,6 +9,13 @@ interface RegionListProps {
 }
 
 export function RegionList({ selectedId, hoveredId, onSelectRegion, onOpenDetail }: RegionListProps) {
+  const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  useEffect(() => {
+    if (hoveredId && itemRefs.current[hoveredId]) {
+      itemRefs.current[hoveredId]!.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }, [hoveredId]);
   const categories = getCategories();
 
   return (
@@ -35,6 +43,7 @@ export function RegionList({ selectedId, hoveredId, onSelectRegion, onOpenDetail
               return (
                 <div
                   key={origin.id}
+                  ref={(el) => { itemRefs.current[origin.id] = el; }}
                   style={{
                     display: "flex",
                     alignItems: "center",

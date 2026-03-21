@@ -55,28 +55,50 @@ Resources for identifying where each PVC origin sits on the heart. Use these alo
 6. [ECG Criteria for Differentiating Left from Right Outflow Tract VAs (PMC)](https://pmc.ncbi.nlm.nih.gov/articles/PMC8076969/) — Includes anatomical cross-sections showing RVOT/LVOT relationships.
 7. [Localization of PVC Foci Based on Multichannel ECG Processing (PMC)](https://pmc.ncbi.nlm.nih.gov/articles/PMC3790125/) — Includes heart diagrams with PVC origin locations marked.
 
+### 12-Lead ECG Morphology References (for waveform rendering)
+
+8. [ECG Characteristics of Idiopathic VAs Based on Anatomy (PMC)](https://pmc.ncbi.nlm.nih.gov/articles/PMC7679832/) — **Comprehensive**: covers outflow tracts, fascicles, papillary muscles, mitral/tricuspid annuli, and epicardial origins with 12-lead ECG figures for each. Best single source for waveform rendering accuracy.
+9. [ECG Criteria for Localization of VPCs from the Inferior RVOT (PMC)](https://pmc.ncbi.nlm.nih.gov/articles/PMC9589426/) — Detailed per-lead amplitude data for RVOT sub-regions.
+10. [Identifying OT PVCs Based on Configuration: ML Approach (PMC)](https://pmc.ncbi.nlm.nih.gov/articles/PMC10487978/) — Quantitative ECG morphology features used for machine learning classification of RVOT vs LVOT.
+11. [Idiopathic OT VA Ablation: Pearls and Pitfalls (PMC)](https://pmc.ncbi.nlm.nih.gov/articles/PMC6528030/) — 12-lead ECG examples from multiple outflow tract sub-sites with annotated figures.
+12. [ECG Characteristics, Identification, and Management of Frequent PVCs (PMC)](https://pmc.ncbi.nlm.nih.gov/articles/PMC10572222/) — Recent comprehensive review with ECG figures across all common PVC origins.
+13. [The RV1-V3 Transition Ratio (Heart Rhythm Open, CC BY)](https://www.heartrhythmopen.com/article/S2666-5018(21)00126-4/pdf) — Open access, CC BY license. Quantitative precordial transition data for RVOT vs LVOT differentiation.
+14. [Modern Mapping and Ablation of Idiopathic OT VAs (RCM)](https://www.imrpress.com/journal/RCM/23/3/10.31083/j.rcm2303103/pdf) — Open access review with detailed 12-lead ECG figures for outflow tract sites.
+
 ### Interactive 3D Anatomy References
 
-8. [3D Cardiac Anatomy for Electrophysiologists — cardiacanatomyatlas.com](https://cardiacanatomyatlas.com/3d/) — Interactive 3D cardiac anatomy atlas specifically designed for EP. Best spatial reference for understanding where structures sit in 3D.
+15. [3D Cardiac Anatomy for Electrophysiologists — cardiacanatomyatlas.com](https://cardiacanatomyatlas.com/3d/) — Interactive 3D cardiac anatomy atlas specifically designed for EP. Best spatial reference for understanding where structures sit in 3D.
 
 ### Quick Reference: PVC Origin Locations on the Heart
 
 | Origin ID | Anatomical Location | Where to Click |
 |-----------|--------------------|--------------------|
-| `rvot-septal` | RV outflow tract, posterior-superior near pulmonic valve, septal side | Upper front of heart, just below the pulmonary artery, on the septal (left) side |
-| `rvot-freewall` | RV outflow tract, anterior/free wall side | Upper front of heart, below pulmonary artery, on the right/anterior side |
-| `lvot-lcc` | Left coronary cusp of the aortic valve | Just below/behind the aorta, left-posterior aspect |
-| `lvot-rcc` | Right coronary cusp of the aortic valve | Just below/behind the aorta, right-anterior aspect |
-| `lvot-rlcc` | Right-left coronary cusp commissure | Between LCC and RCC, at the commissure |
-| `mitral-annulus-anterior` | Anterior mitral annulus (aortomitral continuity) | Left side of heart, where mitral valve meets aortic root, anterior |
-| `mitral-annulus-posterior` | Posterior mitral annulus | Left side, posterior base of left ventricle near AV groove |
-| `tricuspid-annulus-septal` | Septal leaflet of tricuspid valve | Right side, near the interventricular septum at the base |
-| `lv-papillary-anterolateral` | Anterolateral papillary muscle (LV) | Inside left ventricle, lateral wall, mid-cavity |
-| `lv-papillary-posteromedial` | Posteromedial papillary muscle (LV) | Inside left ventricle, medial/posterior wall, mid-cavity |
-| `lv-summit` | LV summit / epicardial (GCV/AIV junction) | Top of left ventricle, near the LAD/circumflex junction, epicardial surface |
-| `aortic-cusp-noncoronary` | Non-coronary cusp of aortic valve | Posterior aspect of aortic root, adjacent to interatrial septum |
-| `rv-moderator-band` | Moderator band (RV) | Inside right ventricle, muscular band crossing from septum to free wall |
-| `crux-of-heart` | Crux (posterior junction of all 4 chambers) | Posterior/inferior surface where AV groove meets interventricular groove |
+| `rvot-septal` | RV outflow tract, septal side | Upper front, below pulmonary artery, septal (left) side |
+| `rvot-freewall` | RV outflow tract, free wall | Upper front, below pulmonary artery, right/anterior side |
+| `rvot-anterior` | RV outflow tract, anterior wall | Upper front, between septal and free wall, anterior |
+| `rvot-posterior` | RV outflow tract, posterior wall | Upper front, near aortic root continuity, posterior |
+| `lvot-lcc` | Left coronary cusp (LVOT approach) | Below/behind aorta, left-posterior |
+| `lvot-rcc` | Right coronary cusp (LVOT approach) | Below/behind aorta, right-anterior |
+| `lvot-lcc-rcc` | LCC-RCC commissure | Between LCC and RCC, most anterior/superior aortic root |
+| `aortic-lcc` | Aortic LCC (cusp level) | Left coronary sinus of Valsalva |
+| `aortic-rcc` | Aortic RCC (cusp level) | Right coronary sinus, behind RVOT septum |
+| `aortic-ncc` | Non-coronary cusp | Posterior aortic root, near interatrial septum |
+| `mitral-anterior` | Anterior mitral annulus | Left side, aortomitral continuity |
+| `mitral-posterior` | Posterior mitral annulus | Left side, posterior base of LV |
+| `mitral-lateral` | Lateral mitral annulus | Left lateral, P2-P3 scallop region |
+| `tricuspid-septal` | Septal tricuspid annulus | Right side, near interventricular septum |
+| `tricuspid-anterior` | Anterior tricuspid annulus | Basal anterior RV, below RVOT |
+| `tricuspid-posterior` | Posterior tricuspid annulus | Inferior RV, near CS ostium |
+| `papillary-anterolateral` | LV anterolateral papillary muscle | Inside LV, lateral wall, mid-cavity |
+| `papillary-posteromedial` | LV posteromedial papillary muscle | Inside LV, medial/posterior wall |
+| `papillary-rv-anterior` | RV anterior papillary muscle | Inside RV, connected to moderator band |
+| `papillary-rv-posterior` | RV posterior papillary muscle | Inside RV, inferior/diaphragmatic wall |
+| `papillary-rv-septal` | RV septal papillary (Lancisi) | Inside RV, septum near RVOT |
+| `lv-summit-gcv` | LV summit (GCV) | Epicardial, GCV/AIV junction |
+| `lv-summit-aiv` | LV summit (AIV) | Epicardial, anterior interventricular groove near LAD |
+| `his-bundle` | His bundle / para-Hisian | Central fibrous body, below aortic valve |
+| `moderator-band` | Moderator band | Inside RV, muscular band septum to free wall |
+| `crux` | Crux of the heart | Posterior, AV groove meets interventricular groove |
 
 ---
 

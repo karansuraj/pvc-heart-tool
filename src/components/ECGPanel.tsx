@@ -8,6 +8,25 @@ interface ECGPanelProps {
 }
 
 // ─── Waveform drawing ───
+// Uses piecewise-linear segments with sharp peaks for realistic QRS morphology.
+// PVCs have no preceding P wave, wide QRS, discordant T waves, and compensatory pause.
+// Epicardial origins (width >= 1.4) get a slurred upstroke (pseudo-delta wave).
+
+/** Attempt at interpolation between keyframe points for sharp, angular waveforms */
+function interpolateKeyframes(
+  keyframes: { t: number; v: number }[],
+  t: number,
+): number {
+  if (t <= keyframes[0].t) return keyframes[0].v;
+  if (t >= keyframes[keyframes.length - 1].t) return keyframes[keyframes.length - 1].v;
+  for (let i = 0; i < keyframes.length - 1; i++) {
+    if (t >= keyframes[i].t && t < keyframes[i + 1].t) {
+      const frac = (t - keyframes[i].t) / (keyframes[i + 1].t - keyframes[i].t);
+      return keyframes[i].v + frac * (keyframes[i + 1].v - keyframes[i].v);
+    }
+  }
+  return 0;
+}
 
 function drawQRS(
   ctx: CanvasRenderingContext2D,
@@ -18,7 +37,78 @@ function drawQRS(
   profile: LeadProfile,
 ): void {
   const waveWidth = cellW - 16;
-  const steps = 300;
+  const steps = 400;
+  const isEpicardial = profile.width >= 1.4;
+
+  // Build keyframe-based QRS waveform for sharp, angular morphology
+  // Time is normalized 0-1 across the cell width
+  const qrsStart = 0.15;
+  const qrsDur = 0.20 * profile.width;
+  const qrsEnd = qrsStart + qrsDur;
+  const stEnd = qrsEnd + 0.03; // short ST segment
+  const tWaveEnd = stEnd + 0.18;
+
+  // QRS keyframes (normalized within QRS duration)
+  const qrsKeyframes: { t: number; v: number }[] = [];
+
+  if (isEpicardial) {
+    // Pseudo-delta wave: slow slurred upstroke before the sharp QRS peak
+    qrsKeyframes.push({ t: 0, v: 0 });
+    // Slurred initial upstroke (pseudo-delta) — takes 25% of QRS
+    if (profile.initial !== 0) {
+      qrsKeyframes.push({ t: 0.08, v: profile.initial * 0.5 });
+      qrsKeyframes.push({ t: 0.15, v: profile.initial });
+      qrsKeyframes.push({ t: 0.20, v: profile.initial * 0.3 });
+    } else {
+      qrsKeyframes.push({ t: 0.15, v: profile.qrs * 0.15 });
+      qrsKeyframes.push({ t: 0.25, v: profile.qrs * 0.3 });
+    }
+    // Main peak — slower rise due to epicardial activation
+    qrsKeyframes.push({ t: 0.45, v: profile.qrs });
+    // Terminal
+    if (profile.terminal !== 0) {
+      qrsKeyframes.push({ t: 0.60, v: 0 });
+      qrsKeyframes.push({ t: 0.75, v: profile.terminal });
+      qrsKeyframes.push({ t: 0.90, v: profile.terminal * 0.2 });
+    } else {
+      qrsKeyframes.push({ t: 0.75, v: profile.qrs * 0.1 });
+    }
+    qrsKeyframes.push({ t: 1, v: 0 });
+  } else {
+    // Standard sharp QRS
+    qrsKeyframes.push({ t: 0, v: 0 });
+
+    // Initial deflection (q or small r wave)
+    if (profile.initial !== 0) {
+      qrsKeyframes.push({ t: 0.08, v: profile.initial * 0.7 });
+      qrsKeyframes.push({ t: 0.12, v: profile.initial });
+      qrsKeyframes.push({ t: 0.16, v: profile.initial * 0.2 });
+    }
+
+    // Main QRS peak — sharp triangular
+    const peakStart = profile.initial !== 0 ? 0.18 : 0.05;
+    qrsKeyframes.push({ t: peakStart, v: profile.qrs * 0.05 });
+    qrsKeyframes.push({ t: 0.35, v: profile.qrs }); // sharp peak
+
+    // Notching — dip and return
+    if (profile.notch) {
+      qrsKeyframes.push({ t: 0.42, v: profile.qrs * 0.55 });
+      qrsKeyframes.push({ t: 0.50, v: profile.qrs * 0.8 });
+    }
+
+    // Descent from main peak
+    qrsKeyframes.push({ t: 0.55, v: profile.qrs * 0.1 });
+
+    // Terminal deflection (s wave or r')
+    if (profile.terminal !== 0) {
+      qrsKeyframes.push({ t: 0.60, v: 0 });
+      qrsKeyframes.push({ t: 0.72, v: profile.terminal });
+      qrsKeyframes.push({ t: 0.85, v: profile.terminal * 0.15 });
+    }
+
+    qrsKeyframes.push({ t: 0.95, v: 0 });
+    qrsKeyframes.push({ t: 1, v: 0 });
+  }
 
   ctx.beginPath();
 
@@ -27,58 +117,28 @@ function drawQRS(
     const px = x0 + 6 + t * waveWidth;
     let py = baseline;
 
-    // Time segments: baseline | P wave | PR | QRS | ST | T wave | baseline
-    if (t >= 0.08 && t < 0.15) {
-      // P wave — small upward bump
-      const pt = (t - 0.08) / 0.07;
-      py = baseline - Math.sin(pt * Math.PI) * amp * 0.06;
-    } else if (t >= 0.20 && t < 0.20 + 0.22 * profile.width) {
-      // QRS complex
-      const qrsDuration = 0.22 * profile.width;
-      const pt = (t - 0.20) / qrsDuration;
-
-      let deflection = 0;
-
-      // Initial deflection (q or small r)
-      if (pt < 0.12 && profile.initial !== 0) {
-        deflection = profile.initial * Math.sin(pt / 0.12 * Math.PI);
-      }
-      // Main QRS deflection
-      else if (pt < 0.55) {
-        const mainPt = (pt - 0.12) / 0.43;
-        deflection = profile.qrs * Math.sin(mainPt * Math.PI);
-
-        // Notching
-        if (profile.notch && mainPt > 0.35 && mainPt < 0.55) {
-          deflection *= 0.7 + 0.3 * Math.sin((mainPt - 0.35) / 0.2 * Math.PI);
-        }
-      }
-      // Terminal deflection
-      else if (pt < 0.85 && profile.terminal !== 0) {
-        const termPt = (pt - 0.55) / 0.30;
-        deflection = profile.terminal * Math.sin(termPt * Math.PI);
-      }
-      // Return to baseline
-      else {
-        const retPt = (pt - 0.85) / 0.15;
-        deflection = (profile.terminal || profile.qrs * 0.05) * (1 - retPt) * Math.sin(Math.PI * 0.8);
-      }
-
+    if (t >= qrsStart && t < qrsEnd) {
+      // QRS complex — use angular keyframes
+      const pt = (t - qrsStart) / qrsDur;
+      const deflection = interpolateKeyframes(qrsKeyframes, pt);
       py = baseline - deflection * amp;
-    } else if (t >= 0.20 + 0.22 * profile.width + 0.02 && t < 0.20 + 0.22 * profile.width + 0.02 + 0.15) {
-      // ST segment + T wave (discordant — opposite to QRS)
-      const tStart = 0.20 + 0.22 * profile.width + 0.02;
-      const tPt = (t - tStart) / 0.15;
-
-      // ST elevation/depression proportional to QRS
-      const stOffset = -profile.qrs * 0.08;
-      // T wave discordant to QRS
-      const tWave = -profile.qrs * 0.25 * Math.sin(tPt * Math.PI);
-
+    } else if (t >= stEnd && t < tWaveEnd) {
+      // T wave — discordant to QRS (smooth, rounded)
+      const tPt = (t - stEnd) / (tWaveEnd - stEnd);
+      // Discordant T: opposite polarity to main QRS deflection
+      const tAmp = -profile.qrs * 0.22;
+      // Smooth bell shape
+      const tWave = tAmp * Math.sin(tPt * Math.PI);
+      // Slight ST offset (same direction as T)
+      const stOffset = -profile.qrs * 0.05;
       py = baseline - (stOffset + tWave) * amp;
+    } else if (t >= qrsEnd && t < stEnd) {
+      // ST segment — slight offset from baseline
+      const stOffset = -profile.qrs * 0.05;
+      py = baseline - stOffset * amp;
     } else {
-      // Baseline with very subtle noise for realism
-      py = baseline + Math.sin(t * 120 + profile.qrs * 10) * 0.2;
+      // Baseline — flat (no P wave for PVCs, compensatory pause after)
+      py = baseline;
     }
 
     if (s === 0) ctx.moveTo(px, py);

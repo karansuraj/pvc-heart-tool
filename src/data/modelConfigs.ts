@@ -30,17 +30,37 @@ export interface ModelConfig {
 
 // ─── Shared origin IDs (must match pvcOrigins.ts) ───
 export const ORIGIN_IDS = [
+  // RVOT
   "rvot-septal",
   "rvot-freewall",
+  "rvot-anterior",
+  "rvot-posterior",
+  // LVOT / Aortic Cusps
   "lvot-lcc",
   "lvot-rcc",
+  "lvot-lcc-rcc",
+  "aortic-lcc",
+  "aortic-rcc",
   "aortic-ncc",
+  // Mitral Annulus
   "mitral-anterior",
   "mitral-posterior",
+  "mitral-lateral",
+  // Tricuspid Annulus
   "tricuspid-septal",
+  "tricuspid-anterior",
+  "tricuspid-posterior",
+  // Papillary Muscles (LV)
   "papillary-anterolateral",
   "papillary-posteromedial",
+  // Papillary Muscles (RV)
+  "papillary-rv-anterior",
+  "papillary-rv-posterior",
+  "papillary-rv-septal",
+  // LV Summit
   "lv-summit-gcv",
+  "lv-summit-aiv",
+  // Other
   "his-bundle",
   "moderator-band",
   "crux",

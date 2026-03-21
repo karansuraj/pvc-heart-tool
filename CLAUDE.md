@@ -57,18 +57,18 @@ App.tsx                         — Root: selectedId, detailId, hoveredId, mappi
 
 | File | Purpose |
 |------|---------|
-| `src/data/pvcOrigins.ts` | 26 PVC origin entries with clinical content, ECG features, citations |
+| `src/data/pvcOrigins.ts` | 23 PVC origin entries with clinical content, ECG features, citations |
 | `src/data/modelConfigs.ts` | Per-model configs: file path, hidden meshes, hotspot positions, scale |
-| `src/data/ecgProfiles.ts` | Literature-derived per-lead ECG morphology profiles for all 26 origins |
+| `src/data/ecgProfiles.ts` | Literature-derived per-lead ECG morphology profiles for all 23 origins |
 
 ### Key data types:
 - `PVCOrigin` — id, name, category, hotspotPosition, ecgFeatures, description, ablationApproach, references, reviewStatus
 - `ModelConfig` — id, name, file, hiddenMeshes, scale, positionOffset, hotspotPositions (Record<string, [x,y,z] | null>)
 - `ECGProfile` — per-lead { qrs, initial, terminal, width, notch } for all 12 leads
 
-### Origin IDs (26 total — must stay in sync across all 3 data files):
+### Origin IDs (23 total — must stay in sync across all 3 data files):
 RVOT: `rvot-septal`, `rvot-freewall`, `rvot-anterior`, `rvot-posterior`
-Aortic: `lvot-lcc`, `lvot-rcc`, `lvot-lcc-rcc`, `aortic-lcc`, `aortic-rcc`, `aortic-ncc`
+LVOT: `lvot-lcc`, `lvot-rcc`, `lvot-lcc-rcc`
 Mitral: `mitral-anterior`, `mitral-posterior`, `mitral-lateral`
 Tricuspid: `tricuspid-septal`, `tricuspid-anterior`, `tricuspid-posterior`
 LV Papillary: `papillary-anterolateral`, `papillary-posteromedial`
@@ -80,7 +80,7 @@ Other: `his-bundle`, `moderator-band`, `crux`
 
 ### 3D Viewer
 - GLB model loading with auto-center/scale/BVH acceleration
-- Model switcher dropdown (top-right) — 4 models registered
+- Model switcher dropdown (top-right) — 4 models registered, Draco-compressed models supported
 - Visual settings panel: brightness, exposure, roughness, metalness, opacity, color tint, wireframe, double-sided
 - Camera: smooth zoom (trackpad-optimized), horizontal spin-to-hotspot, save/load default view
 - Hotspots: colored markers per origin, labels on hover, click opens detail view
@@ -110,19 +110,19 @@ Other: `his-bundle`, `moderator-band`, `crux`
 
 | File | Size | Config ID | Deployed |
 |------|------|-----------|----------|
+| `interior_heart_optimized.glb` | 11MB | `interior-heart-high-detail` | Yes (default) |
 | `heart.glb` | 34MB | `heart-current` | Yes |
-| `heart-0.glb` | 116MB | `heart-large` | No (>100MB limit) |
 | `heart-1.glb` | 4.2MB | `heart-medium` | Yes |
 | `heart-2.glb` | 751K | `heart-small` | Yes |
 
-Models are gitignored. See `heart-models.md` for download links and ECG reference sources.
+Models are gitignored and Draco-compressed for deployment. Drei's `useGLTF` has built-in Draco decoder support. See `heart-models.md` for download links and ECG reference sources.
 
 ## What's Done vs What's Remaining
 
 ### Done
 - [x] 3D viewer with GLB loading, controls, visual settings
-- [x] 26 PVC origins with clinical content and citations
-- [x] Literature-derived ECG profiles for all 26 origins
+- [x] 23 PVC origins with clinical content and citations
+- [x] Literature-derived ECG profiles for all 23 origins
 - [x] Interactive mapping mode for hotspot positioning
 - [x] Per-model config system with model switcher
 - [x] Collapsible resizable panels
@@ -133,9 +133,9 @@ Models are gitignored. See `heart-models.md` for download links and ECG referenc
 - [x] GitHub repo
 
 ### Remaining
-- [ ] EP physician validation of all clinical content (all 26 entries are "draft")
+- [ ] EP physician validation of all clinical content (all 23 entries are "draft")
 - [ ] Real ECG images to replace/supplement schematic renderer
-- [ ] Hotspot position refinement for all 26 origins (12 new ones have approximate positions)
+- [ ] Hotspot position refinement for all 23 origins
 - [ ] Landing/intro page
 - [ ] Mobile responsive layout
 - [ ] Cross-sectional heart model (ideal for internal PVC origins)

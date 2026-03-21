@@ -30,12 +30,13 @@ src/
 │   ├── RegionList.tsx               # Selectable PVC origin list
 │   └── ResizablePanel.tsx           # Collapsible horizontal split panel
 ├── data/
-│   ├── pvcOrigins.ts                # Clinical data for all PVC origins (14 entries)
+│   ├── pvcOrigins.ts                # Clinical data for all PVC origins (23 entries)
+│   ├── ecgProfiles.ts               # Literature-derived per-lead ECG morphology profiles
 │   └── modelConfigs.ts              # Per-model configs: file, hidden meshes, hotspot positions
 public/
-├── models/                          # GLB heart models
-│   ├── heart.glb                    # Active model (34MB)
-│   ├── heart-0.glb                  # Large detailed model (116MB)
+├── models/                          # GLB heart models (Draco-compressed)
+│   ├── interior_heart_optimized.glb # Default model — high detail, Draco-compressed (11MB)
+│   ├── heart.glb                    # Previous default model (34MB)
 │   ├── heart-1.glb                  # Medium model (4.2MB)
 │   └── heart-2.glb                  # Small model (751K)
 ├── ecg/                             # ECG images (pending EP physician sourcing)
@@ -56,7 +57,7 @@ Maps PVC origin hotspot positions to any heart model — no code changes needed.
 2. Click **"Edit Mappings"** button in the right panel header
 3. Click on the heart surface to place a marker
 4. Select the PVC origin from the dropdown to assign that position
-5. Repeat for all 14 origins — green markers show mapped positions
+5. Repeat for all origins — green markers show mapped positions
 6. Click **"Copy mappings as JSON"** to export, then paste into `modelConfigs.ts`
 7. Click **"Exit"** to return to normal mode
 
@@ -110,24 +111,24 @@ Or connect the GitHub repo for auto-deploys (Vercel dashboard → Project Settin
 
 ### Model file limits
 
-Vercel has a **100MB per-file limit** for static assets. The `.vercelignore` file excludes any models over this limit (e.g. `heart-0.glb` at 116MB).
+Vercel has a **100MB per-file limit** for static assets. The `.vercelignore` file excludes any oversized source models. All deployed models use Draco compression to stay well under the limit.
 
 | File | Size | Deployed? |
 |------|------|-----------|
+| `interior_heart_optimized.glb` | 11MB | Yes (default) |
 | `heart.glb` | 34MB | Yes |
-| `heart-0.glb` | 116MB | No — exceeds limit, excluded via `.vercelignore` |
 | `heart-1.glb` | 4.2MB | Yes |
 | `heart-2.glb` | 751K | Yes |
 
 Model files are served via Vercel's CDN with 1-year cache headers (`vercel.json`).
 
-### For oversized models
+### Optimizing new models
 
-If you need to deploy models over 100MB:
-- **Vercel Blob Storage** — upload via `vercel blob` CLI, load from URL
-- **Cloudflare R2** — free egress, cheapest CDN option
-- **AWS S3 + CloudFront** — standard approach
-- **Optimize the model** — Draco compression can reduce file size significantly
+Use `gltf-transform` to apply Draco compression before deploying:
+```bash
+npx @gltf-transform/cli optimize input.glb output.glb --compress draco
+```
+Drei's `useGLTF` has built-in Draco decoder support — no code changes needed.
 
 ### Current deployment
 

@@ -77,7 +77,7 @@ export function blankHotspots(): Record<string, [number, number, number] | null>
 const heartCurrent: ModelConfig = {
   id: "heart-current",
   name: "Heart Model (Current)",
-  file: "models/heart.glb",
+  file: "models/heart_compressed.glb",
   hiddenMeshes: [],
   scale: null,
   positionOffset: null,
@@ -154,7 +154,7 @@ const interiorHeartHighDetail: ModelConfig = {
 const heartMedium: ModelConfig = {
   id: "heart-medium",
   name: "Heart Model (Medium)",
-  file: "models/heart-1.glb",
+  file: "models/heart-1_compressed.glb",
   hiddenMeshes: [],
   scale: null,
   positionOffset: null,
@@ -164,7 +164,7 @@ const heartMedium: ModelConfig = {
 const heartSmall: ModelConfig = {
   id: "heart-small",
   name: "3D EduTex Heart (Small)",
-  file: "models/heart-2.glb",
+  file: "models/heart-2_compressed.glb",
   hiddenMeshes: [],
   scale: null,
   positionOffset: null,

@@ -1,7 +1,11 @@
 node_modules
 dist
 dist2
+# Exclude uncompressed originals (large, not used by app)
+public/models/heart.glb
 public/models/heart-0.glb
+public/models/heart-1.glb
+public/models/heart-2.glb
 public/models/interior_heart_-_high_detail.glb
 public/models/interior_heart_-_high_detail.zip
 .git

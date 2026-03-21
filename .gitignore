@@ -13,13 +13,19 @@ dist2
 dist-ssr
 *.local
 
-# 3D model files (too large for git — see heart-models.md for download links)
-public/models/*.glb
-public/models/*.gltf
+# 3D model source files (uncompressed originals — too large for git)
 public/models/*.zip
+public/models/*.gltf
 public/models/*.bin
 public/models/textures/
 public/models/interior_heart_gltf/
+# Keep uncompressed originals out of git
+public/models/heart.glb
+public/models/heart-0.glb
+public/models/heart-1.glb
+public/models/heart-2.glb
+public/models/interior_heart_-_high_detail.glb
+# Compressed models ARE tracked in git (small enough to commit)
 
 # Editor directories and files
 .vscode/*

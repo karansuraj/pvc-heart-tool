@@ -74,52 +74,10 @@ export function blankHotspots(): Record<string, [number, number, number] | null>
 
 // ─── Model Configs ───
 
-const heartCurrent: ModelConfig = {
-  id: "heart-current",
-  name: "Heart Model (Current)",
-  file: "models/heart_compressed.glb",
-  hiddenMeshes: [],
-  scale: null,
-  positionOffset: null,
-  hotspotPositions: {
-    // RVOT
-    "rvot-septal": [-0.275, 0.371, 0.094],
-    "rvot-freewall": [-0.051, -0.043, -0.060],
-    "rvot-anterior": [-0.160, 0.300, -0.050],
-    "rvot-posterior": [-0.320, 0.410, 0.180],
-    // LVOT / Aortic Cusps
-    "lvot-lcc": [-0.380, 0.360, 0.394],
-    "lvot-rcc": [0.064, -0.220, 0.124],
-    "lvot-lcc-rcc": [-0.160, 0.280, 0.310],
-    // Mitral Annulus
-    "mitral-anterior": [-0.175, -0.252, 0.138],
-    "mitral-posterior": [0.296, -0.225, -0.207],
-    "mitral-lateral": [0.180, -0.300, 0.060],
-    // Tricuspid Annulus
-    "tricuspid-septal": [0.030, 0.273, -0.194],
-    "tricuspid-anterior": [-0.080, 0.180, -0.280],
-    "tricuspid-posterior": [0.120, 0.200, -0.100],
-    // Papillary Muscles (LV)
-    "papillary-anterolateral": [0.033, -0.018, -0.238],
-    "papillary-posteromedial": [0.086, -0.165, -0.068],
-    // Papillary Muscles (RV)
-    "papillary-rv-anterior": [-0.180, -0.120, -0.150],
-    "papillary-rv-posterior": [-0.100, -0.200, 0.050],
-    "papillary-rv-septal": [-0.140, 0.150, -0.100],
-    // LV Summit
-    "lv-summit-gcv": [-0.549, 0.812, -0.024],
-    "lv-summit-aiv": [-0.480, 0.750, 0.100],
-    // Other
-    "his-bundle": [-0.105, 0.509, -0.381],
-    "moderator-band": [-0.255, -0.059, 0.091],
-    "crux": [-0.291, 0.182, 0.043],
-  }
-};
-
 const interiorHeartHighDetail: ModelConfig = {
-  id: "interior-heart-high-detail",
+  id: "university-of-dundee-interior-heart-high-detail",
   name: "Interior Heart — High Detail",
-  file: "models/interior_heart_optimized.glb",
+  file: "models/university-of-dundee-interior-heart-high-detail.glb",
   hiddenMeshes: [],
   scale: null,
   positionOffset: null,
@@ -151,6 +109,26 @@ const interiorHeartHighDetail: ModelConfig = {
   },
 };
 
+const heartCurrent: ModelConfig = {
+  id: "human-heart-internal-structure-3d-model",
+  name: "Human Heart Internal Structure 3D Model",
+  file: "models/human-heart-internal-structure-3d-model.glb",
+  hiddenMeshes: [],
+  scale: null,
+  positionOffset: null,
+  hotspotPositions: blankHotspots(),
+};
+
+const heartSmall: ModelConfig = {
+  id: "3d-edutex-human-heart",
+  name: "3D EduTex Human Heart",
+  file: "models/3d-edutex-human-heart.glb",
+  hiddenMeshes: [],
+  scale: null,
+  positionOffset: null,
+  hotspotPositions: blankHotspots(),
+};
+
 const heartMedium: ModelConfig = {
   id: "heart-medium",
   name: "Heart Model (Medium)",
@@ -161,27 +139,17 @@ const heartMedium: ModelConfig = {
   hotspotPositions: blankHotspots(),
 };
 
-const heartSmall: ModelConfig = {
-  id: "heart-small",
-  name: "3D EduTex Heart (Small)",
-  file: "models/heart-2_compressed.glb",
-  hiddenMeshes: [],
-  scale: null,
-  positionOffset: null,
-  hotspotPositions: blankHotspots(),
-};
-
 // ─── Registry ───
 
 export const modelConfigs: Record<string, ModelConfig> = {
-  "heart-current": heartCurrent,
-  "interior-heart-high-detail": interiorHeartHighDetail,
+  "university-of-dundee-interior-heart-high-detail": interiorHeartHighDetail,
+  "human-heart-internal-structure-3d-model": heartCurrent,
+  "3d-edutex-human-heart": heartSmall,
   "heart-medium": heartMedium,
-  "heart-small": heartSmall,
 };
 
 /** Which model to use — change this to swap models */
-export const activeModelId = "interior-heart-high-detail";
+export const activeModelId = "university-of-dundee-interior-heart-high-detail";
 
 export function getActiveModelConfig(): ModelConfig {
   return modelConfigs[activeModelId];

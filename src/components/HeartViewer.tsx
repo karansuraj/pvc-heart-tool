@@ -59,7 +59,8 @@ export function HeartViewer({
     const origin = pvcOrigins.find((o) => o.id === selectedId);
     if (!origin) return;
 
-    const pos = positions[origin.id] ?? origin.hotspotPosition;
+    const pos = positions[origin.id];
+    if (!pos) return; // Origin not mapped for this model
     cameraRef.current?.flyTo(pos);
   }, [selectedId, focusOnSelect, mappingMode, currentModelId, mappedPositions]);
 
@@ -122,7 +123,8 @@ export function HeartViewer({
           (() => {
             const positions = getModelConfig(currentModelId)?.hotspotPositions ?? {};
             return pvcOrigins.map((origin) => {
-              const pos = positions[origin.id] ?? origin.hotspotPosition;
+              const pos = positions[origin.id];
+              if (!pos) return null; // Skip origins not mapped for this model
               return (
                 <Hotspot
                   key={`${currentModelId}-${origin.id}`}

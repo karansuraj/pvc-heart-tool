@@ -35,10 +35,10 @@ src/
 │   └── modelConfigs.ts              # Per-model configs: file, hidden meshes, hotspot positions
 public/
 ├── models/                          # GLB heart models (Draco-compressed)
-│   ├── interior_heart_optimized.glb # Default model — high detail, Draco-compressed (11MB)
-│   ├── heart.glb                    # Previous default model (34MB)
-│   ├── heart-1.glb                  # Medium model (4.2MB)
-│   └── heart-2.glb                  # Small model (751K)
+│   ├── university-of-dundee-interior-heart-high-detail.glb  # Default (11MB)
+│   ├── human-heart-internal-structure-3d-model.glb          # (5.3MB)
+│   ├── heart-1_compressed.glb                               # (3.8MB)
+│   └── 3d-edutex-human-heart.glb                            # (14KB)
 ├── ecg/                             # ECG images (pending EP physician sourcing)
 ```
 
@@ -113,14 +113,14 @@ Or connect the GitHub repo for auto-deploys (Vercel dashboard → Project Settin
 
 Vercel has a **100MB per-file limit** for static assets. The `.vercelignore` file excludes any oversized source models. All deployed models use Draco compression to stay well under the limit.
 
-| File | Size | Deployed? |
-|------|------|-----------|
-| `interior_heart_optimized.glb` | 11MB | Yes (default) |
-| `heart.glb` | 34MB | Yes |
-| `heart-1.glb` | 4.2MB | Yes |
-| `heart-2.glb` | 751K | Yes |
+| File | Size | Source |
+|------|------|--------|
+| `university-of-dundee-interior-heart-high-detail.glb` | 11MB (default) | [University of Dundee, CAHID - Interior heart - high detail (Sketchfab)](https://sketchfab.com/3d-models/interior-heart-high-detail-7a592ce3b0514258ad4c4ef9e18b8f8e) |
+| `human-heart-internal-structure-3d-model.glb` | 5.3MB | [Haiqa Arif - Human Heart Internal Structure 3D Model (Sketchfab)](https://sketchfab.com/3d-models/human-heart-internal-structure-3d-model-21d346f72230432e8ed5fe448b03cca5) |
+| `heart-1_compressed.glb` | 3.8MB | <!-- TODO: add source link --> |
+| `3d-edutex-human-heart.glb` | 14KB | [3D EduTex - Human Heart (Sketchfab)](https://sketchfab.com/3d-models/human-heart-f5fa1e719f3d4f28a7c31728a86a9b42) |
 
-Model files are served via Vercel's CDN with 1-year cache headers (`vercel.json`).
+All models are Draco-compressed and committed to the repo. Served via Vercel's CDN with 1-year cache headers (`vercel.json`).
 
 ### Optimizing new models
 

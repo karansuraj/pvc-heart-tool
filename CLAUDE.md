@@ -110,10 +110,10 @@ Other: `his-bundle`, `moderator-band`, `crux`
 
 | File | Size | Config ID | Deployed |
 |------|------|-----------|----------|
-| `interior_heart_optimized.glb` | 11MB | `interior-heart-high-detail` | Yes (default) |
-| `heart.glb` | 34MB | `heart-current` | Yes |
+| `university-of-dundee-interior-heart-high-detail.glb` | 11MB | `university-of-dundee-interior-heart-high-detail` | Yes (default) |
+| `human-heart-internal-structure-3d-model.glb` | 34MB | `human-heart-internal-structure-3d-model` | Yes |
 | `heart-1.glb` | 4.2MB | `heart-medium` | Yes |
-| `heart-2.glb` | 751K | `heart-small` | Yes |
+| `3d-edutex-human-heart.glb` | 751K | `3d-edutex-human-heart` | Yes |
 
 Models are gitignored and Draco-compressed for deployment. Drei's `useGLTF` has built-in Draco decoder support. See `heart-models.md` for download links and ECG reference sources.
 

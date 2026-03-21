@@ -1,133 +1,155 @@
-# PVC Heart Localization Tool — Project Context for AI Agents
+# PVC Heart Localization Tool — Agent Context
+
+## IMPORTANT: Keep This File Updated
+
+**Any agent working on this project MUST update this file and the project plan (`PVC-Heart-Visualization-Project-Plan.md`) before ending a session.** When you make architectural changes, add features, fix bugs, or change data structures — reflect those changes here immediately. Future agents depend on this file for accurate context. If you add a new component, update the architecture section. If you change how data flows, update the data layer section. If you complete a task, update the status section.
+
+---
 
 ## What This Project Is
 
-An interactive web-based educational tool for cardiology and electrophysiology (EP) fellows. Users click on anatomical locations of a 3D heart model and see the corresponding PVC (premature ventricular contraction) morphology on a 12-lead ECG, along with clinical descriptions and ablation approaches. This is a free educational resource.
+An interactive web-based educational tool for electrophysiology (EP) education. Users explore a 3D heart model, click on PVC origin locations, and see corresponding 12-lead ECG morphologies with clinical descriptions and ablation approaches.
 
-**Audience:** Medical students, internal medicine residents, cardiology fellows, and EP fellows.
+**Audience:** Medical students, residents, cardiology/EP fellows. **Cost:** Free.
 
-**Critical constraint:** Clinical accuracy is paramount. All clinical content is AI-drafted from published EP literature with full citations and requires EP physician validation before being considered accurate. Never generate clinical content without citations.
+**Critical constraint:** Clinical accuracy is paramount. All content is AI-drafted from published EP literature with full citations. Every entry requires EP physician validation before production use.
 
 ## How to Run
 
 ```bash
-cd pvc-heart-tool
 npm install
-npm run dev        # Starts Vite dev server (typically port 5173 or 5174)
-npm run build      # Production build (output: dist/)
+npm run dev          # Dev server (port 5173)
+npm run build        # Production build → dist/
+vercel --prod --yes  # Deploy to Vercel
 ```
 
-**Known issue:** If Vite throws EPERM errors on cache, the `vite.config.ts` already routes cache to `/tmp/vite-cache`. If building to `dist/` fails due to locked files, use `--outDir dist2`.
+Models go in `public/models/` (gitignored — see `heart-models.md` for download links).
+
+**Live deployment:** https://pvc-heart-tool.vercel.app
+**GitHub:** https://github.com/karansuraj/pvc-heart-tool (private)
 
 ## Tech Stack
 
 - **React 19** + **TypeScript** + **Vite 8**
-- **React Three Fiber (R3F)** + **@react-three/drei** for 3D rendering
-- **Three.js** for geometry, materials, raycasting
-- No backend — purely client-side SPA
+- **React Three Fiber** + **@react-three/drei** — 3D rendering
+- **three-mesh-bvh** — BVH acceleration for fast raycasting on high-poly models
+- **Vercel** — deployment (static assets + CDN)
 
-## Architecture Overview
+## Architecture
 
 ```
-App.tsx                    — Root layout: header + ResizablePanel (75/25 split)
-  ├── HeartViewer.tsx      — R3F Canvas, camera, lighting, OrbitControls
-  │     ├── HeartModel.tsx — Procedural 3D heart (placeholder for GLB)
-  │     └── Hotspot.tsx    — Clickable glowing spheres at PVC origin coordinates
-  ├── RegionList.tsx       — Sidebar list of PVC origins grouped by category
-  ├── ECGPanel.tsx         — Canvas-drawn schematic ECG (placeholder for real images)
-  ├── ClinicalInfoPanel.tsx— Description, ECG features, ablation, references
-  └── ResizablePanel.tsx   — Draggable horizontal split panel
+App.tsx                         — Root: selectedId, detailId, hoveredId, mappingMode, model state
+├── HeartViewer.tsx              — R3F Canvas, lighting, camera, model, hotspots, visual settings
+│   ├── HeartModel.tsx           — GLB loader, auto-center/scale, BVH, visual settings application
+│   ├── Hotspot.tsx              — Clickable markers with labels, hover/selection state
+│   ├── CameraController.tsx     — OrbitControls, smooth zoom, spin-to-hotspot, save/load default view
+│   ├── SurfacePointer.tsx       — Raycasts mouse position on heart surface (mapping mode)
+│   ├── ViewerControls.tsx       — Toolbar: zoom, reset, rotate, focus, save view, settings
+│   └── VisualSettings.tsx       — Settings panel: brightness, roughness, metalness, opacity, wireframe, color tint
+├── MappingPanel.tsx             — Interactive hotspot position mapping tool
+├── RegionList.tsx               — PVC origin list with select/hover/detail actions
+├── ECGPanel.tsx                 — 12-lead ECG renderer with expandable modal
+├── ClinicalInfoPanel.tsx        — Clinical descriptions, ECG features, ablation, references
+└── ResizablePanel.tsx           — Collapsible horizontal split panel
 ```
 
-**Data layer:** `src/data/pvcOrigins.ts` — 14 PVC origin entries, each with:
-- 3D hotspot coordinates, ECG features (axis, morphology, transition)
-- Clinical description, ablation approach, differential locations, prevalence
-- Full references with DOI links
-- Review status (`"draft"` or `"reviewed"`) — all currently `"draft"`
+## Data Layer
 
-## Key Design Decisions
+| File | Purpose |
+|------|---------|
+| `src/data/pvcOrigins.ts` | 26 PVC origin entries with clinical content, ECG features, citations |
+| `src/data/modelConfigs.ts` | Per-model configs: file path, hidden meshes, hotspot positions, scale |
+| `src/data/ecgProfiles.ts` | Literature-derived per-lead ECG morphology profiles for all 26 origins |
 
-1. **One-directional only (MVP):** Click heart → see ECG. Reverse (ECG → heart location) is deferred to a future phase.
+### Key data types:
+- `PVCOrigin` — id, name, category, hotspotPosition, ecgFeatures, description, ablationApproach, references, reviewStatus
+- `ModelConfig` — id, name, file, hiddenMeshes, scale, positionOffset, hotspotPositions (Record<string, [x,y,z] | null>)
+- `ECGProfile` — per-lead { qrs, initial, terminal, width, notch } for all 12 leads
 
-2. **Hotspot overlay approach (no Blender):** Invisible clickable spheres are placed at 3D coordinates over the heart model. This avoids needing Blender-segmented mesh regions. Hotspot positions are defined in `pvcOrigins.ts`.
+### Origin IDs (26 total — must stay in sync across all 3 data files):
+RVOT: `rvot-septal`, `rvot-freewall`, `rvot-anterior`, `rvot-posterior`
+Aortic: `lvot-lcc`, `lvot-rcc`, `lvot-lcc-rcc`, `aortic-lcc`, `aortic-rcc`, `aortic-ncc`
+Mitral: `mitral-anterior`, `mitral-posterior`, `mitral-lateral`
+Tricuspid: `tricuspid-septal`, `tricuspid-anterior`, `tricuspid-posterior`
+LV Papillary: `papillary-anterolateral`, `papillary-posteromedial`
+RV Papillary: `papillary-rv-anterior`, `papillary-rv-posterior`, `papillary-rv-septal`
+LV Summit: `lv-summit-gcv`, `lv-summit-aiv`
+Other: `his-bundle`, `moderator-band`, `crux`
 
-3. **Procedural heart model is a placeholder:** The current heart in `HeartModel.tsx` is built from ~20 Three.js geometries (spheres, cylinders, cones, torus). It approximates anatomical structures but needs to be replaced with a real GLB model.
+## Key Features
 
-4. **ECG panel is a placeholder:** `ECGPanel.tsx` draws schematic waveforms procedurally on canvas. The EP physician will source real static 12-lead ECG images from published literature. The panel has a prominent watermark: "SCHEMATIC — NOT CLINICAL ECG."
+### 3D Viewer
+- GLB model loading with auto-center/scale/BVH acceleration
+- Model switcher dropdown (top-right) — 4 models registered
+- Visual settings panel: brightness, exposure, roughness, metalness, opacity, color tint, wireframe, double-sided
+- Camera: smooth zoom (trackpad-optimized), horizontal spin-to-hotspot, save/load default view
+- Hotspots: colored markers per origin, labels on hover, click opens detail view
 
-5. **Clinical content validation flow:** AI drafts content with citations → EP physician reviews and validates → status changes from `"draft"` to `"reviewed"`. The `reviewStatus` field gates what should be shown as validated.
+### Mapping Mode
+- Enter via "Edit Mappings" button in right panel
+- Click heart surface → orange pending marker + coordinates displayed
+- Assign to PVC origin via dropdown → colored marker appears
+- Live coordinate readout at bottom-left while hovering
+- "Copy mappings as JSON" exports for pasting into `modelConfigs.ts`
+- Per-model positions stored in `modelConfigs.ts`
 
-6. **No AI hallucinations policy:** Every piece of clinical content must trace back to published sources. The `references` array on each PVC origin entry contains full citations (authors, title, journal, year, DOI, relevance).
+### ECG Renderer
+- Literature-derived per-lead profiles in `src/data/ecgProfiles.ts`
+- Each origin has hardcoded QRS polarity, amplitude, initial/terminal deflections, width, notching
+- Sources: Dixit 2003, Yamada 2008, Tada 2005/2007, Yamada 2010, Enriquez 2017, Sadek 2015
+- Click-to-expand modal with full-size rendering + ECG feature summary
+- Still marked as schematic pending EP physician validation
 
-## File-by-File Guide
+### Right Panel
+- **List view**: click to select (highlight + spin), double-click or arrow for details
+- **Detail view**: ECG + clinical info + back button
+- Hover highlight: hovering hotspot on 3D model highlights + auto-scrolls to list item
+- Collapsible via chevron button
 
-| File | Purpose | Key Details |
-|------|---------|-------------|
-| `src/App.tsx` | Root component | Manages `selectedId` state, renders header + ResizablePanel with left (heart + region list) and right (ECG + clinical info) panels |
-| `src/components/HeartModel.tsx` | 3D heart geometry | Procedural model from Three.js primitives. Contains commented-out `GLBHeart` component ready for swap. Slow idle rotation via `useFrame`. |
-| `src/components/HeartViewer.tsx` | R3F scene setup | Canvas, camera at `[0, 0.5, 4]`, ambient + directional + point lighting, `Environment` preset, `ContactShadows`, `OrbitControls`. Renders HeartModel + all Hotspots. |
-| `src/components/Hotspot.tsx` | Clickable markers | Pulsing animated spheres at 3D positions. HTML labels on hover/selection via drei's `Html`. Glow effect on selection. |
-| `src/components/ECGPanel.tsx` | ECG display | Canvas-based procedural 12-lead ECG grid. Generates lead-specific morphologies from `ecgFeatures`. **Placeholder only — not clinically accurate.** |
-| `src/components/ClinicalInfoPanel.tsx` | Clinical details | Shows review status badge, description, ECG characteristics, ablation approach, prevalence, differentials, cited references with DOI links. |
-| `src/components/RegionList.tsx` | Origin list sidebar | Grouped by category (RVOT, Aortic Cusps, etc.). Color-coded dots, selection highlighting. |
-| `src/components/ResizablePanel.tsx` | Resizable split layout | Horizontal split with draggable divider. Props: `defaultRightWidth=380`, `minRightWidth=280`, `maxRightWidth=700`. |
-| `src/data/pvcOrigins.ts` | Clinical data store | 14 PVC origins with full TypeScript interfaces (`PVCOrigin`, `Reference`). Helper functions: `getCategories()`, `getOriginsByCategory()`, `getOriginById()`. |
-| `vite.config.ts` | Build config | `cacheDir: '/tmp/vite-cache'` to avoid EPERM issues on some filesystems. |
+## Models
 
-## GLB Model Swap Path (Priority Upgrade)
+| File | Size | Config ID | Deployed |
+|------|------|-----------|----------|
+| `heart.glb` | 34MB | `heart-current` | Yes |
+| `heart-0.glb` | 116MB | `heart-large` | No (>100MB limit) |
+| `heart-1.glb` | 4.2MB | `heart-medium` | Yes |
+| `heart-2.glb` | 751K | `heart-small` | Yes |
 
-The procedural heart is the biggest visual gap. To replace it with a real anatomical model:
+Models are gitignored. See `heart-models.md` for download links and ECG reference sources.
 
-1. Source a GLB/GLTF anatomical heart model (Sketchfab, NIH 3D Print Exchange, etc.)
-2. Place it at `public/models/heart.glb`
-3. In `HeartModel.tsx`, uncomment the `GLBHeart` component and comment out `ProceduralHeart`
-4. Adjust hotspot coordinates in `pvcOrigins.ts` to match the new model's coordinate space
-5. Consider building a dev-only coordinate picker tool to help position hotspots on the new model
+## What's Done vs What's Remaining
 
-**Recommended sources:**
-- Sketchfab (search "anatomical heart" with Creative Commons license)
-- NIH 3D Print Exchange (https://3d.nih.gov)
-- Three.js examples repository
+### Done
+- [x] 3D viewer with GLB loading, controls, visual settings
+- [x] 26 PVC origins with clinical content and citations
+- [x] Literature-derived ECG profiles for all 26 origins
+- [x] Interactive mapping mode for hotspot positioning
+- [x] Per-model config system with model switcher
+- [x] Collapsible resizable panels
+- [x] Fly-to-hotspot (horizontal spin)
+- [x] Hover highlight + auto-scroll
+- [x] ECG modal expansion
+- [x] Vercel deployment
+- [x] GitHub repo
 
-## PVC Origins Covered (14 locations)
+### Remaining
+- [ ] EP physician validation of all clinical content (all 26 entries are "draft")
+- [ ] Real ECG images to replace/supplement schematic renderer
+- [ ] Hotspot position refinement for all 26 origins (12 new ones have approximate positions)
+- [ ] Landing/intro page
+- [ ] Mobile responsive layout
+- [ ] Cross-sectional heart model (ideal for internal PVC origins)
 
-| ID | Name | Category |
-|----|------|----------|
-| rvot-septal | RVOT Septal | RVOT |
-| rvot-free-wall | RVOT Free Wall | RVOT |
-| lcc | Left Coronary Cusp | Aortic Cusps |
-| rcc | Right Coronary Cusp | Aortic Cusps |
-| ncc | Non-Coronary Cusp | Aortic Cusps |
-| mitral-anterior | Anterior Mitral Annulus | Mitral Annular |
-| mitral-posterior | Posterior Mitral Annulus | Mitral Annular |
-| tricuspid-septal | Tricuspid Septal Annulus | Tricuspid Annular |
-| papillary-anterolateral | Anterolateral Papillary | Papillary Muscles |
-| papillary-posteromedial | Posteromedial Papillary | Papillary Muscles |
-| lv-summit | LV Summit (GCV/AIV) | Epicardial |
-| his-bundle | His Bundle / Para-Hisian | Septal |
-| moderator-band | Moderator Band | RV |
-| crux | Crux of the Heart | Epicardial |
-
-## Priority Tasks (in order)
-
-1. **Source and integrate a real anatomical heart GLB model** — Replace the procedural placeholder. This is the single most impactful visual improvement.
-2. **Build a dev-only hotspot coordinate picker** — A tool that lets you click on the GLB model surface and log 3D coordinates, so hotspot positions can be precisely placed.
-3. **Refine hotspot positions** — Once the GLB is loaded, adjust all 14 hotspot coordinates in `pvcOrigins.ts`.
-4. **ECG image integration** — The EP physician will provide static 12-lead ECG images from literature. When available, update each origin's `ecgImage` field and modify `ECGPanel.tsx` to display real images instead of procedural schematics.
-5. **Clinical content review** — EP physician validates each origin's `description`, `ecgFeatures`, `ablationApproach`, and `references`. Update `reviewStatus` to `"reviewed"` for validated entries.
-6. **UI polish** — Responsive design, mobile support, loading states, error boundaries, accessibility.
-7. **Future phase: bidirectional lookup** — Given an ECG pattern, identify possible heart locations (reverse direction).
-
-## Companion Documents
-
-- `../PVC-Heart-Visualization-Project-Plan.md` — Full project plan with vision, rationale, tech stack details, development timeline (~8 days with AI assistance), risk mitigations
-- `../Guide-3D-Model-Preparation.md` — Detailed guide for 3D model preparation with three approaches (A: hotspot overlays, B: pre-segmented, C: full Blender segmentation)
-
-## Code Style & Conventions
-
-- Functional React components with hooks (no class components)
-- Inline styles (no CSS-in-JS library or CSS modules — kept simple for MVP)
+## Code Conventions
+- Functional React components with hooks
+- Inline styles (no CSS library)
 - TypeScript strict mode
-- All clinical data centralized in `pvcOrigins.ts` (single source of truth)
-- Materials are memoized with `useMemo` in Three.js components
-- R3F patterns: `useFrame` for animation, `useGLTF` for model loading (drei)
+- All clinical data in `src/data/` (single source of truth)
+- R3F patterns: `useFrame` for animation, `useGLTF` for models, `forwardRef` + `useImperativeHandle` for camera control
+
+## Documentation Files
+- `CLAUDE.md` — This file. Agent context and instructions.
+- `PVC-Heart-Visualization-Project-Plan.md` — Full project plan, architecture, progress log
+- `Guide-3D-Model-Preparation.md` — How to prepare heart models (hotspot vs segmentation approaches)
+- `heart-models.md` — Curated links to heart models, ECG references, mapping guide
+- `README.md` — Setup, deployment, and user-facing documentation

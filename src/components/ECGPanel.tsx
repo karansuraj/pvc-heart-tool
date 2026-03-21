@@ -1,165 +1,10 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import type { PVCOrigin } from "../data/pvcOrigins";
+import { ECG_PROFILES } from "../data/ecgProfiles";
+import type { LeadProfile, LeadName } from "../data/ecgProfiles";
 
 interface ECGPanelProps {
   origin: PVCOrigin;
-}
-
-// ─── Lead-specific QRS amplitude profiles ───
-// Values range from -1 (fully negative/deep S) to +1 (tall R)
-// Derived from axis, morphology, and transition data per origin
-
-interface LeadProfile {
-  /** QRS main deflection: -1 to 1 */
-  qrs: number;
-  /** Small initial deflection (q or r wave): -1 to 1, 0 = none */
-  initial: number;
-  /** Terminal deflection (s or r'): -1 to 1, 0 = none */
-  terminal: number;
-  /** QRS width multiplier (1 = normal, 1.5 = wide) */
-  width: number;
-  /** Notching in QRS */
-  notch: boolean;
-}
-
-type LeadName = "I" | "II" | "III" | "aVR" | "aVL" | "aVF" | "V1" | "V2" | "V3" | "V4" | "V5" | "V6";
-
-function getLeadProfiles(origin: PVCOrigin): Record<LeadName, LeadProfile> {
-  const f = origin.ecgFeatures;
-  const morph = f.morphology.toLowerCase();
-  const axis = f.axis.toLowerCase();
-  const trans = f.transition.toLowerCase();
-  const features = f.otherFeatures.join(" ").toLowerCase();
-
-  const isLBBB = morph.includes("lbbb");
-  const isRBBB = morph.includes("rbbb");
-  const isInferior = axis.includes("inferior");
-  const isSuperior = axis.includes("superior");
-  const isLeftward = axis.includes("left");
-  const isRightward = axis.includes("right");
-
-  // Determine precordial transition lead number
-  let transitionLead = 4; // default V4
-  if (trans.includes("v1")) transitionLead = 1;
-  else if (trans.includes("v2")) transitionLead = 2;
-  else if (trans.includes("v3")) transitionLead = 3;
-  else if (trans.includes("v4")) transitionLead = 4;
-  else if (trans.includes("v5")) transitionLead = 5;
-  else if (trans.includes("v6")) transitionLead = 6;
-  if (trans.includes("early")) transitionLead = Math.min(transitionLead, 2);
-  if (trans.includes("late")) transitionLead = Math.max(transitionLead, 5);
-
-  const wide = features.includes("> 140") || features.includes("> 150") || features.includes("broad");
-  const narrow = features.includes("narrow") || features.includes("< 120");
-  const widthMult = narrow ? 0.8 : wide ? 1.4 : 1.1;
-
-  const notchInferior = features.includes("notch");
-
-  // ─── Limb leads based on axis ───
-  let leadI: LeadProfile, leadII: LeadProfile, leadIII: LeadProfile;
-  let aVR: LeadProfile, aVL: LeadProfile, aVF: LeadProfile;
-
-  if (isInferior) {
-    // Inferior axis: positive II, III, aVF; negative aVR
-    leadII =  { qrs:  0.85, initial: 0, terminal: -0.1, width: widthMult, notch: notchInferior };
-    leadIII = { qrs:  0.75, initial: 0, terminal: -0.1, width: widthMult, notch: notchInferior };
-    aVF =     { qrs:  0.80, initial: 0, terminal: -0.1, width: widthMult, notch: notchInferior };
-    aVR =     { qrs: -0.70, initial: 0.05, terminal: 0, width: widthMult, notch: false };
-    leadI =   { qrs:  0.25, initial: 0, terminal: -0.1, width: widthMult, notch: false };
-    aVL =     { qrs: -0.20, initial: 0.05, terminal: 0, width: widthMult, notch: false };
-
-    if (isRightward) {
-      leadI.qrs = -0.15;
-      aVL.qrs = -0.40;
-    }
-  } else if (isSuperior) {
-    // Superior axis: negative II, III, aVF; positive aVL
-    leadII =  { qrs: -0.70, initial: 0.05, terminal: 0, width: widthMult, notch: false };
-    leadIII = { qrs: -0.80, initial: 0.05, terminal: 0, width: widthMult, notch: false };
-    aVF =     { qrs: -0.75, initial: 0.05, terminal: 0, width: widthMult, notch: false };
-    aVR =     { qrs:  0.40, initial: 0, terminal: -0.1, width: widthMult, notch: false };
-    leadI =   { qrs:  0.40, initial: 0, terminal: -0.1, width: widthMult, notch: false };
-    aVL =     { qrs:  0.60, initial: 0, terminal: -0.1, width: widthMult, notch: false };
-
-    if (isRightward) {
-      leadI.qrs = -0.30;
-      aVL.qrs = -0.20;
-    }
-  } else if (isLeftward) {
-    leadII =  { qrs:  0.20, initial: 0, terminal: -0.2, width: widthMult, notch: false };
-    leadIII = { qrs: -0.40, initial: 0.05, terminal: 0, width: widthMult, notch: false };
-    aVF =     { qrs: -0.10, initial: 0, terminal: 0, width: widthMult, notch: false };
-    aVR =     { qrs: -0.50, initial: 0.05, terminal: 0, width: widthMult, notch: false };
-    leadI =   { qrs:  0.60, initial: 0, terminal: -0.1, width: widthMult, notch: false };
-    aVL =     { qrs:  0.55, initial: 0, terminal: -0.1, width: widthMult, notch: false };
-  } else {
-    // Normal / variable axis
-    leadII =  { qrs:  0.50, initial: 0, terminal: -0.15, width: widthMult, notch: false };
-    leadIII = { qrs:  0.20, initial: 0, terminal: -0.2, width: widthMult, notch: false };
-    aVF =     { qrs:  0.35, initial: 0, terminal: -0.15, width: widthMult, notch: false };
-    aVR =     { qrs: -0.55, initial: 0.05, terminal: 0, width: widthMult, notch: false };
-    leadI =   { qrs:  0.35, initial: 0, terminal: -0.15, width: widthMult, notch: false };
-    aVL =     { qrs:  0.15, initial: 0, terminal: -0.1, width: widthMult, notch: false };
-  }
-
-  // ─── Precordial leads based on morphology + transition ───
-  const precordial: Record<string, LeadProfile> = {};
-
-  for (let v = 1; v <= 6; v++) {
-    const lead = `V${v}` as LeadName;
-
-    if (isLBBB) {
-      // LBBB: negative in V1 (QS/rS), progressively positive through transition
-      if (v < transitionLead) {
-        // Pre-transition: predominantly negative
-        const depth = v === 1 ? -0.85 : -0.85 + (v - 1) * 0.15;
-        const smallR = v === 1 && morph.includes("rs") ? 0.1 : 0;
-        precordial[lead] = { qrs: depth, initial: smallR, terminal: 0, width: widthMult, notch: false };
-      } else if (v === transitionLead) {
-        // Transition: biphasic
-        precordial[lead] = { qrs: 0.15, initial: 0, terminal: -0.3, width: widthMult, notch: false };
-      } else {
-        // Post-transition: predominantly positive
-        const height = 0.4 + (v - transitionLead) * 0.15;
-        precordial[lead] = { qrs: Math.min(height, 0.8), initial: 0, terminal: -0.1, width: widthMult, notch: false };
-      }
-    } else if (isRBBB) {
-      // RBBB: positive in V1 (R, Rs, rsR'), deep S in V5-V6
-      if (v === 1) {
-        const hasRSR = morph.includes("rsr") || morph.includes("m-shape");
-        precordial[lead] = {
-          qrs: 0.75,
-          initial: hasRSR ? 0.2 : 0,
-          terminal: hasRSR ? -0.3 : -0.1,
-          width: widthMult,
-          notch: hasRSR,
-        };
-      } else if (v === 2) {
-        precordial[lead] = { qrs: 0.55, initial: 0, terminal: -0.2, width: widthMult, notch: false };
-      } else if (v <= transitionLead) {
-        const progress = (v - 2) / (transitionLead - 2 || 1);
-        precordial[lead] = { qrs: 0.55 - progress * 0.3, initial: 0, terminal: -0.2 - progress * 0.2, width: widthMult, notch: false };
-      } else {
-        precordial[lead] = { qrs: 0.4 + (v - transitionLead) * 0.1, initial: 0, terminal: -0.35, width: widthMult, notch: false };
-      }
-    } else {
-      // Multiphasic / variable — interpolate based on transition
-      if (v < transitionLead) {
-        const depth = -0.5 + (v - 1) * 0.15;
-        precordial[lead] = { qrs: depth, initial: 0.1, terminal: 0, width: widthMult, notch: false };
-      } else {
-        const height = 0.3 + (v - transitionLead) * 0.15;
-        precordial[lead] = { qrs: Math.min(height, 0.7), initial: -0.1, terminal: -0.1, width: widthMult, notch: false };
-      }
-    }
-  }
-
-  return {
-    I: leadI, II: leadII, III: leadIII,
-    aVR, aVL, aVF,
-    V1: precordial.V1, V2: precordial.V2, V3: precordial.V3,
-    V4: precordial.V4, V5: precordial.V5, V6: precordial.V6,
-  };
 }
 
 // ─── Waveform drawing ───
@@ -278,8 +123,8 @@ function drawECG(canvas: HTMLCanvasElement, origin: PVCOrigin) {
     ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
   }
 
-  // Get lead profiles
-  const profiles = getLeadProfiles(origin);
+  // Get lead profiles — hardcoded literature-derived data
+  const profiles = ECG_PROFILES[origin.id] ?? ECG_PROFILES["rvot-septal"]; // fallback
   const leads: LeadName[] = ["I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6"];
   const cols = 4;
   const rows = 3;

@@ -46,23 +46,20 @@ export function Hotspot({ origin, isSelected, onClick }: HotspotProps) {
         // but keep the visual small
       >
         <sphereGeometry args={[0.04, 12, 12]} />
-        <meshStandardMaterial
+        <meshBasicMaterial
           color={isSelected ? "#ffffff" : origin.hotspotColor}
-          emissive={isSelected ? origin.hotspotColor : hovered ? origin.hotspotColor : "#000000"}
-          emissiveIntensity={isSelected ? 1.5 : hovered ? 0.8 : 0.3}
+          depthTest={false}
         />
       </mesh>
 
-      {/* Outer glow ring — visual only, no pointer events */}
+      {/* Outer glow ring — visual only, no pointer events, always on top */}
       <mesh ref={glowRef} raycast={() => null}>
         <sphereGeometry args={[0.06, 12, 12]} />
-        <meshStandardMaterial
+        <meshBasicMaterial
           color={origin.hotspotColor}
           transparent
-          opacity={isSelected ? 0.5 : hovered ? 0.35 : 0.12}
-          emissive={origin.hotspotColor}
-          emissiveIntensity={0.5}
-          depthWrite={false}
+          opacity={isSelected ? 0.5 : hovered ? 0.35 : 0.15}
+          depthTest={false}
         />
       </mesh>
 

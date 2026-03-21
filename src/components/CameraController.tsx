@@ -177,10 +177,10 @@ export const CameraController = forwardRef<CameraControllerHandle, Props>(
         maxDistance={MAX_DISTANCE}
         target={orbitTarget}
         enableDamping={true}
-        dampingFactor={0.08}
+        dampingFactor={0.12}
         rotateSpeed={0.7}
         panSpeed={0.7}
-        zoomSpeed={0.8}
+        zoomSpeed={0.35}
       />
     );
   }

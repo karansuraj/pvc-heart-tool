@@ -7,7 +7,6 @@ const FALLBACK_CAM_OFFSET = new THREE.Vector3(0, 1, 4);
 const ZOOM_STEP = 0.8;
 const MIN_DISTANCE = 0;
 const MAX_DISTANCE = 12;
-const FLY_TO_DISTANCE = 2.5;
 const STORAGE_KEY_VIEW = "pvc-default-camera-view";
 
 interface SavedView {

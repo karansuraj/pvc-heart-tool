@@ -146,53 +146,6 @@ export const ECG_PROFILES: Record<string, ECGProfile> = {
     V6:   { qrs: 0.7,  initial: 0,    terminal: -0.1, width: 1.1, notch: false },
   },
 
-  // Yamada 2008: M/W in V1, tallest R among cusps, negative lead I
-  "aortic-lcc": {
-    I:    { qrs: -0.4, initial: 0,    terminal: -0.1, width: 1.1, notch: false },
-    II:   { qrs: 0.8,  initial: 0,    terminal: -0.1, width: 1.1, notch: false },
-    III:  { qrs: 0.9,  initial: 0,    terminal: -0.1, width: 1.1, notch: false },
-    aVR:  { qrs: -0.5, initial: 0,    terminal: 0,    width: 1.1, notch: false },
-    aVL:  { qrs: -0.7, initial: 0,    terminal: 0,    width: 1.1, notch: false },
-    aVF:  { qrs: 0.9,  initial: 0,    terminal: -0.1, width: 1.1, notch: false },
-    V1:   { qrs: 0.7,  initial: 0,    terminal: -0.3, width: 1.1, notch: true  },
-    V2:   { qrs: 0.8,  initial: 0,    terminal: -0.2, width: 1.1, notch: false },
-    V3:   { qrs: 0.9,  initial: 0,    terminal: -0.1, width: 1.1, notch: false },
-    V4:   { qrs: 0.9,  initial: 0,    terminal: -0.1, width: 1.1, notch: false },
-    V5:   { qrs: 0.8,  initial: 0,    terminal: -0.1, width: 1.1, notch: false },
-    V6:   { qrs: 0.6,  initial: 0,    terminal: -0.1, width: 1.1, notch: false },
-  },
-
-  // Yamada 2008: LBBB, transition V2-V3, lead I slightly positive
-  "aortic-rcc": {
-    I:    { qrs: 0.2,  initial: 0,    terminal: -0.1, width: 1.1, notch: false },
-    II:   { qrs: 0.9,  initial: 0,    terminal: -0.1, width: 1.1, notch: false },
-    III:  { qrs: 0.8,  initial: 0,    terminal: -0.1, width: 1.1, notch: false },
-    aVR:  { qrs: -0.7, initial: 0,    terminal: 0,    width: 1.1, notch: false },
-    aVL:  { qrs: -0.3, initial: 0,    terminal: 0,    width: 1.1, notch: false },
-    aVF:  { qrs: 0.9,  initial: 0,    terminal: -0.1, width: 1.1, notch: false },
-    V1:   { qrs: -0.4, initial: 0.2,  terminal: 0,    width: 1.1, notch: false },
-    V2:   { qrs: 0.4,  initial: 0.2,  terminal: -0.2, width: 1.1, notch: false },
-    V3:   { qrs: 0.8,  initial: 0.1,  terminal: -0.1, width: 1.1, notch: false },
-    V4:   { qrs: 0.9,  initial: 0,    terminal: -0.1, width: 1.1, notch: false },
-    V5:   { qrs: 0.8,  initial: 0,    terminal: -0.1, width: 1.1, notch: false },
-    V6:   { qrs: 0.7,  initial: 0,    terminal: -0.1, width: 1.1, notch: false },
-  },
-
-  // Yamada 2008: near-His, narrower QRS, M-pattern V1
-  "aortic-ncc": {
-    I:    { qrs: 0.1,  initial: 0,    terminal: -0.1, width: 1.0, notch: false },
-    II:   { qrs: 0.7,  initial: 0,    terminal: -0.1, width: 1.0, notch: false },
-    III:  { qrs: 0.7,  initial: 0,    terminal: -0.1, width: 1.0, notch: false },
-    aVR:  { qrs: -0.6, initial: 0,    terminal: 0,    width: 1.0, notch: false },
-    aVL:  { qrs: -0.3, initial: 0,    terminal: 0,    width: 1.0, notch: false },
-    aVF:  { qrs: 0.7,  initial: 0,    terminal: -0.1, width: 1.0, notch: false },
-    V1:   { qrs: -0.6, initial: 0.2,  terminal: 0.2,  width: 1.0, notch: true  },
-    V2:   { qrs: -0.3, initial: 0.2,  terminal: 0,    width: 1.0, notch: false },
-    V3:   { qrs: 0.5,  initial: 0.2,  terminal: -0.2, width: 1.0, notch: false },
-    V4:   { qrs: 0.8,  initial: 0.1,  terminal: -0.1, width: 1.0, notch: false },
-    V5:   { qrs: 0.7,  initial: 0,    terminal: -0.1, width: 1.0, notch: false },
-    V6:   { qrs: 0.6,  initial: 0,    terminal: -0.1, width: 1.0, notch: false },
-  },
 
   // ── Mitral Annulus ────────────────────────────────────────────────────
   // Tada 2005: RBBB, superior axis, negative inferior leads

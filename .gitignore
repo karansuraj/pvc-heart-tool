@@ -16,6 +16,10 @@ dist-ssr
 # 3D model files (too large for git — see heart-models.md for download links)
 public/models/*.glb
 public/models/*.gltf
+public/models/*.zip
+public/models/*.bin
+public/models/textures/
+public/models/interior_heart_gltf/
 
 # Editor directories and files
 .vscode/*

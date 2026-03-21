@@ -39,9 +39,6 @@ export const ORIGIN_IDS = [
   "lvot-lcc",
   "lvot-rcc",
   "lvot-lcc-rcc",
-  "aortic-lcc",
-  "aortic-rcc",
-  "aortic-ncc",
   // Mitral Annulus
   "mitral-anterior",
   "mitral-posterior",
@@ -94,9 +91,6 @@ const heartCurrent: ModelConfig = {
     "lvot-lcc": [-0.380, 0.360, 0.394],
     "lvot-rcc": [0.064, -0.220, 0.124],
     "lvot-lcc-rcc": [-0.160, 0.280, 0.310],
-    "aortic-lcc": [-0.420, 0.420, 0.350],
-    "aortic-rcc": [-0.200, 0.340, 0.200],
-    "aortic-ncc": [0.446, -0.746, -0.479],
     // Mitral Annulus
     "mitral-anterior": [-0.175, -0.252, 0.138],
     "mitral-posterior": [0.296, -0.225, -0.207],
@@ -122,14 +116,39 @@ const heartCurrent: ModelConfig = {
   }
 };
 
-const heartLarge: ModelConfig = {
-  id: "heart-large",
-  name: "Detailed Anatomical Heart (Large)",
-  file: "models/heart-0.glb",
-  hiddenMeshes: [0, 2, 6, 22, 23, 30],
+const interiorHeartHighDetail: ModelConfig = {
+  id: "interior-heart-high-detail",
+  name: "Interior Heart — High Detail",
+  file: "models/interior_heart_optimized.glb",
+  hiddenMeshes: [],
   scale: null,
   positionOffset: null,
-  hotspotPositions: blankHotspots(),
+  // hotspotPositions: blankHotspots(),
+  hotspotPositions: {
+    "rvot-septal": [0.056, -0.095, 0.267],
+    "rvot-freewall": [0.055, 0.102, 0.570],
+    "rvot-anterior": [0.309, -0.121, 0.517],
+    "rvot-posterior": [-0.166, -0.042, 0.558],
+    "lvot-lcc": [0.023, -0.066, -0.053],
+    "lvot-rcc": [0.066, -0.096, 0.167],
+    "lvot-lcc-rcc": [0.085, -0.016, 0.048],
+    "mitral-anterior": [0.258, -0.210, -0.111],
+    "mitral-posterior": [-0.035, -0.610, -0.195],
+    "mitral-lateral": [0.190, -0.438, -0.240],
+    "tricuspid-septal": [-0.245, -0.462, 0.030],
+    "tricuspid-anterior": [-0.251, -0.204, 0.302],
+    "tricuspid-posterior": [-0.404, -0.599, 0.249],
+    "papillary-anterolateral": [0.485, -0.582, 0.140],
+    "papillary-posteromedial": [0.337, -0.498, 0.394],
+    "papillary-rv-anterior": [0.204, -0.687, 0.651],
+    "papillary-rv-posterior": [-0.052, -0.760, 0.462],
+    "papillary-rv-septal": [0.000, -0.336, 0.306],
+    "lv-summit-gcv": [0.312, -0.016, -0.014],
+    "lv-summit-aiv": [0.467, 0.043, 0.254],
+    "his-bundle": [-0.139, -0.185, 0.254],
+    "moderator-band": [0.267, -0.424, 0.578],
+    "crux": [-0.166, -0.704, 0.016]
+  },
 };
 
 const heartMedium: ModelConfig = {
@@ -156,13 +175,13 @@ const heartSmall: ModelConfig = {
 
 export const modelConfigs: Record<string, ModelConfig> = {
   "heart-current": heartCurrent,
-  "heart-large": heartLarge,
+  "interior-heart-high-detail": interiorHeartHighDetail,
   "heart-medium": heartMedium,
   "heart-small": heartSmall,
 };
 
 /** Which model to use — change this to swap models */
-export const activeModelId = "heart-current";
+export const activeModelId = "interior-heart-high-detail";
 
 export function getActiveModelConfig(): ModelConfig {
   return modelConfigs[activeModelId];

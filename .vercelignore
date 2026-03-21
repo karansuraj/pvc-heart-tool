@@ -2,4 +2,6 @@ node_modules
 dist
 dist2
 public/models/heart-0.glb
+public/models/interior_heart_-_high_detail.glb
+public/models/interior_heart_-_high_detail.zip
 .git

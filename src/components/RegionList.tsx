@@ -81,7 +81,7 @@ export function RegionList({ selectedId, onSelectRegion, onOpenDetail }: RegionL
                     {origin.name}
                   </button>
 
-                  {/* Info button — opens detail view */}
+                  {/* Detail arrow — opens detail view */}
                   <button
                     onClick={() => onOpenDetail(origin.id)}
                     title="View details"
@@ -89,31 +89,22 @@ export function RegionList({ selectedId, onSelectRegion, onOpenDetail }: RegionL
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      padding: "2px 6px",
-                      border: "1px solid",
-                      borderColor: isSelected ? "#bbb" : "#ddd",
-                      background: isSelected ? "#f0f0f0" : "#f8f8f8",
+                      width: "24px",
+                      height: "24px",
+                      border: "none",
+                      background: "transparent",
                       cursor: "pointer",
-                      color: isSelected ? "#555" : "#999",
-                      fontSize: "10px",
+                      color: isSelected ? "#555" : "#aaa",
+                      fontSize: "16px",
                       flexShrink: 0,
-                      borderRadius: "3px",
+                      borderRadius: "4px",
                       marginRight: "4px",
-                      transition: "all 0.15s",
-                      fontFamily: "system-ui, sans-serif",
+                      transition: "color 0.15s",
                     }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = "#4488ff";
-                      e.currentTarget.style.color = "#fff";
-                      e.currentTarget.style.borderColor = "#4488ff";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = isSelected ? "#f0f0f0" : "#f8f8f8";
-                      e.currentTarget.style.color = isSelected ? "#555" : "#999";
-                      e.currentTarget.style.borderColor = isSelected ? "#bbb" : "#ddd";
-                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = "#4488ff"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = isSelected ? "#555" : "#aaa"; }}
                   >
-                    info
+                    &#8250;
                   </button>
                 </div>
               );

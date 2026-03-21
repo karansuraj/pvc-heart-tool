@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import type { PVCOrigin } from "../data/pvcOrigins";
 
 interface ECGPanelProps {
@@ -342,6 +342,8 @@ function drawECG(canvas: HTMLCanvasElement, origin: PVCOrigin) {
 
 export function ECGPanel({ origin }: ECGPanelProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const modalCanvasRef = useRef<HTMLCanvasElement>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -349,42 +351,170 @@ export function ECGPanel({ origin }: ECGPanelProps) {
     }
   }, [origin]);
 
+  // Draw on modal canvas when it opens
+  useEffect(() => {
+    if (modalOpen && modalCanvasRef.current) {
+      drawECG(modalCanvasRef.current, origin);
+    }
+  }, [modalOpen, origin]);
+
+  // Close on Escape
+  useEffect(() => {
+    if (!modalOpen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setModalOpen(false);
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [modalOpen]);
+
+  const handleOpen = useCallback(() => setModalOpen(true), []);
+  const handleClose = useCallback(() => setModalOpen(false), []);
+
   return (
-    <div style={{ width: "100%", padding: "0" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "8px",
-        }}
-      >
-        <h3 style={{ margin: 0, fontSize: "14px", color: "#666" }}>
-          12-Lead ECG — {origin.name}
-        </h3>
-        <span
+    <>
+      <div style={{ width: "100%", padding: "0" }}>
+        <div
           style={{
-            fontSize: "10px",
-            color: "#c00",
-            background: "#fff0f0",
-            padding: "2px 6px",
-            borderRadius: "3px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "8px",
           }}
         >
-          Schematic placeholder — real ECG images pending
-        </span>
+          <h3 style={{ margin: 0, fontSize: "14px", color: "#666" }}>
+            12-Lead ECG — {origin.name}
+          </h3>
+          <span
+            style={{
+              fontSize: "10px",
+              color: "#c00",
+              background: "#fff0f0",
+              padding: "2px 6px",
+              borderRadius: "3px",
+            }}
+          >
+            Schematic placeholder — real ECG images pending
+          </span>
+        </div>
+        {/* Clickable thumbnail */}
+        <div
+          onClick={handleOpen}
+          style={{ cursor: "zoom-in", position: "relative" }}
+          title="Click to expand"
+        >
+          <canvas
+            ref={canvasRef}
+            width={800}
+            height={450}
+            style={{
+              width: "100%",
+              height: "auto",
+              borderRadius: "4px",
+              border: "1px solid #e0d8d0",
+            }}
+          />
+          {/* Expand hint */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: "6px",
+              right: "6px",
+              background: "rgba(0,0,0,0.5)",
+              color: "#fff",
+              fontSize: "10px",
+              padding: "2px 6px",
+              borderRadius: "3px",
+              pointerEvents: "none",
+            }}
+          >
+            Click to expand
+          </div>
+        </div>
       </div>
-      <canvas
-        ref={canvasRef}
-        width={800}
-        height={450}
-        style={{
-          width: "100%",
-          height: "auto",
-          borderRadius: "4px",
-          border: "1px solid #e0d8d0",
-        }}
-      />
-    </div>
+
+      {/* Full-screen modal */}
+      {modalOpen && (
+        <div
+          onClick={handleClose}
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 1000,
+            background: "rgba(0, 0, 0, 0.85)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "24px",
+            cursor: "zoom-out",
+          }}
+        >
+          {/* Header */}
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: "100%",
+              maxWidth: "1200px",
+              marginBottom: "12px",
+              cursor: "default",
+            }}
+          >
+            <div>
+              <h2 style={{ margin: 0, fontSize: "18px", color: "#fff" }}>
+                12-Lead ECG — {origin.fullName}
+              </h2>
+              <div style={{ display: "flex", gap: "16px", marginTop: "6px", flexWrap: "wrap" }}>
+                <span style={{ fontSize: "12px", color: "#aaa" }}>
+                  <strong style={{ color: "#ccc" }}>Axis:</strong> {origin.ecgFeatures.axis}
+                </span>
+                <span style={{ fontSize: "12px", color: "#aaa" }}>
+                  <strong style={{ color: "#ccc" }}>V1:</strong> {origin.ecgFeatures.morphology}
+                </span>
+                <span style={{ fontSize: "12px", color: "#aaa" }}>
+                  <strong style={{ color: "#ccc" }}>Transition:</strong> {origin.ecgFeatures.transition}
+                </span>
+              </div>
+            </div>
+            <button
+              onClick={handleClose}
+              style={{
+                background: "rgba(255,255,255,0.1)",
+                border: "1px solid rgba(255,255,255,0.2)",
+                color: "#fff",
+                borderRadius: "6px",
+                padding: "6px 14px",
+                fontSize: "13px",
+                cursor: "pointer",
+                flexShrink: 0,
+              }}
+            >
+              Close (Esc)
+            </button>
+          </div>
+
+          {/* Large ECG canvas */}
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{ width: "100%", maxWidth: "1200px", cursor: "default" }}
+          >
+            <canvas
+              ref={modalCanvasRef}
+              width={1600}
+              height={900}
+              style={{
+                width: "100%",
+                height: "auto",
+                borderRadius: "6px",
+                border: "1px solid rgba(255,255,255,0.1)",
+              }}
+            />
+          </div>
+        </div>
+      )}
+    </>
   );
 }

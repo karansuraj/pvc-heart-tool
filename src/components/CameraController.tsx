@@ -99,14 +99,29 @@ export const CameraController = forwardRef<CameraControllerHandle, Props>(
         }
       },
       flyTo(point: [number, number, number]) {
+        const controls = controlsRef.current;
+        if (!controls) return;
+
+        // Rotate around the orbit target to face the hotspot,
+        // keeping the current distance and vertical angle
         const pointVec = new THREE.Vector3(...point);
-        const dir = new THREE.Vector3().subVectors(pointVec, orbitTargetVec).normalize();
-        const camPos = pointVec.clone().add(dir.multiplyScalar(FLY_TO_DISTANCE));
-        camPos.y += 0.3;
+        const currentOffset = new THREE.Vector3().subVectors(camera.position, controls.target);
+        const currentDist = currentOffset.length();
+        const currentY = camera.position.y;
+
+        // Direction from orbit center to the hotspot (horizontal only)
+        const dir = new THREE.Vector3().subVectors(pointVec, controls.target);
+        dir.y = 0;
+        dir.normalize();
+
+        // Place camera on the opposite side of the hotspot (looking at it),
+        // at the current distance, preserving vertical position
+        const camPos = controls.target.clone().add(dir.multiplyScalar(currentDist));
+        camPos.y = currentY;
 
         flyTarget.current = {
           pos: camPos,
-          target: pointVec,
+          target: controls.target.clone(),
         };
       },
       saveAsDefault() {

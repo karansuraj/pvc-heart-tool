@@ -1,0 +1,5 @@
+node_modules
+dist
+dist2
+public/models/heart-0.glb
+.git

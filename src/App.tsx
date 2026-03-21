@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback } from "react";
 import { HeartViewer } from "./components/HeartViewer";
 import { ECGPanel } from "./components/ECGPanel";
 import { ClinicalInfoPanel } from "./components/ClinicalInfoPanel";
@@ -6,68 +6,29 @@ import { RegionList } from "./components/RegionList";
 import { MappingPanel } from "./components/MappingPanel";
 import { ResizablePanel } from "./components/ResizablePanel";
 import { getOriginById } from "./data/pvcOrigins";
-import { blankHotspots, activeModelId as defaultModelId } from "./data/modelConfigs";
-
-// ─── localStorage helpers for per-model mappings ───
-
-const STORAGE_KEY = "pvc-hotspot-mappings";
-
-type AllMappings = Record<string, Record<string, [number, number, number] | null>>;
-
-function loadAllMappings(): AllMappings {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : {};
-  } catch {
-    return {};
-  }
-}
-
-function saveAllMappings(all: AllMappings) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
-}
-
-function loadMappingsForModel(modelId: string): Record<string, [number, number, number] | null> {
-  const all = loadAllMappings();
-  return all[modelId] ?? blankHotspots();
-}
-
-function saveMappingsForModel(modelId: string, positions: Record<string, [number, number, number] | null>) {
-  const all = loadAllMappings();
-  all[modelId] = positions;
-  saveAllMappings(all);
-}
-
-// ─── App ───
+import { getModelConfig, blankHotspots, activeModelId as defaultModelId } from "./data/modelConfigs";
 
 function App() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
   const detailOrigin = detailId ? getOriginById(detailId) : null;
 
-  // Track active model from HeartViewer
+  // Track active model
   const [currentModelId, setCurrentModelId] = useState(defaultModelId);
 
-  // Mapping mode state — loaded from localStorage per model
+  // Mapping mode state — session only, export via "Copy as JSON" then paste into modelConfigs.ts
   const [mappingMode, setMappingMode] = useState(false);
   const [pendingPosition, setPendingPosition] = useState<[number, number, number] | null>(null);
   const [mappedPositions, setMappedPositions] = useState<Record<string, [number, number, number] | null>>(
-    () => loadMappingsForModel(defaultModelId)
+    () => ({ ...getModelConfig(defaultModelId)?.hotspotPositions ?? blankHotspots() })
   );
 
-  // When model changes, load that model's mappings
+  // When model changes, load that model's config mappings
   const handleModelChange = useCallback((modelId: string) => {
     setCurrentModelId(modelId);
-    setMappedPositions(loadMappingsForModel(modelId));
+    setMappedPositions({ ...getModelConfig(modelId)?.hotspotPositions ?? blankHotspots() });
     setPendingPosition(null);
   }, []);
-
-  // Auto-save mappings to localStorage whenever they change
-  const currentModelRef = useRef(currentModelId);
-  currentModelRef.current = currentModelId;
-  useEffect(() => {
-    saveMappingsForModel(currentModelRef.current, mappedPositions);
-  }, [mappedPositions]);
 
   const handleMappingClick = useCallback((position: [number, number, number]) => {
     setPendingPosition(position);

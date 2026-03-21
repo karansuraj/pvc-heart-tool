@@ -27,3 +27,4 @@ public/models/*.gltf
 *.njsproj
 *.sln
 *.sw?
+.vercel

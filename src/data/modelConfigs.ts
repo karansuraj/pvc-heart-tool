@@ -64,7 +64,22 @@ const heartCurrent: ModelConfig = {
   hiddenMeshes: [],
   scale: null,
   positionOffset: null,
-  hotspotPositions: blankHotspots(),
+  hotspotPositions: {
+    "rvot-septal": [-0.275, 0.371, 0.094],
+    "rvot-freewall": [-0.051, -0.043, -0.060],
+    "lvot-lcc": [-0.380, 0.360, 0.394],
+    "lvot-rcc": [0.064, -0.220, 0.124],
+    "lvot-rlcc": [0.231, -0.214, -0.053],
+    "mitral-annulus-anterior": [-0.175, -0.252, 0.138],
+    "mitral-annulus-posterior": [0.296, -0.225, -0.207],
+    "tricuspid-annulus-septal": [0.030, 0.273, -0.194],
+    "lv-papillary-anterolateral": [0.033, -0.018, -0.238],
+    "lv-papillary-posteromedial": [0.086, -0.165, -0.068],
+    "lv-summit": [-0.549, 0.812, -0.024],
+    "aortic-cusp-noncoronary": [-0.248, 0.355, -0.170],
+    "rv-moderator-band": [-0.255, -0.059, 0.091],
+    "crux-of-heart": [-0.291, 0.182, 0.043]
+  },
 };
 
 const heartLarge: ModelConfig = {

@@ -55,13 +55,11 @@ export function HeartViewer({
   useEffect(() => {
     if (!selectedId || !focusOnSelect || mappingMode) return;
 
-    // Resolve position: localStorage > config > default
-    const lsPositions = mappedPositions ?? {};
-    const configPositions = getModelConfig(currentModelId)?.hotspotPositions ?? {};
+    const positions = getModelConfig(currentModelId)?.hotspotPositions ?? {};
     const origin = pvcOrigins.find((o) => o.id === selectedId);
     if (!origin) return;
 
-    const pos = lsPositions[origin.id] ?? configPositions[origin.id] ?? origin.hotspotPosition;
+    const pos = positions[origin.id] ?? origin.hotspotPosition;
     cameraRef.current?.flyTo(pos);
   }, [selectedId, focusOnSelect, mappingMode, currentModelId, mappedPositions]);
 
@@ -119,16 +117,15 @@ export function HeartViewer({
           visualSettings={visualSettings}
         />
 
-        {/* PVC origin hotspots — localStorage mappings > config mappings > default positions */}
+        {/* PVC origin hotspots — use config positions, fall back to pvcOrigins defaults */}
         {!mappingMode &&
           (() => {
-            const configPositions = getModelConfig(currentModelId)?.hotspotPositions ?? {};
-            const lsPositions = mappedPositions ?? {};
+            const positions = getModelConfig(currentModelId)?.hotspotPositions ?? {};
             return pvcOrigins.map((origin) => {
-              const pos = lsPositions[origin.id] ?? configPositions[origin.id] ?? origin.hotspotPosition;
+              const pos = positions[origin.id] ?? origin.hotspotPosition;
               return (
                 <Hotspot
-                  key={origin.id}
+                  key={`${currentModelId}-${origin.id}`}
                   origin={{ ...origin, hotspotPosition: pos }}
                   isSelected={selectedId === origin.id}
                   onClick={onSelectRegion}

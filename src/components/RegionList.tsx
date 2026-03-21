@@ -89,22 +89,31 @@ export function RegionList({ selectedId, onSelectRegion, onOpenDetail }: RegionL
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      width: "24px",
-                      height: "24px",
-                      border: "none",
-                      background: "transparent",
+                      padding: "2px 6px",
+                      border: "1px solid",
+                      borderColor: isSelected ? "#bbb" : "#ddd",
+                      background: isSelected ? "#f0f0f0" : "#f8f8f8",
                       cursor: "pointer",
-                      color: isSelected ? "#666" : "#ccc",
-                      fontSize: "14px",
+                      color: isSelected ? "#555" : "#999",
+                      fontSize: "10px",
                       flexShrink: 0,
-                      borderRadius: "4px",
+                      borderRadius: "3px",
                       marginRight: "4px",
-                      transition: "color 0.15s",
+                      transition: "all 0.15s",
+                      fontFamily: "system-ui, sans-serif",
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.color = "#4488ff"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.color = isSelected ? "#666" : "#ccc"; }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "#4488ff";
+                      e.currentTarget.style.color = "#fff";
+                      e.currentTarget.style.borderColor = "#4488ff";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = isSelected ? "#f0f0f0" : "#f8f8f8";
+                      e.currentTarget.style.color = isSelected ? "#555" : "#999";
+                      e.currentTarget.style.borderColor = isSelected ? "#bbb" : "#ddd";
+                    }}
                   >
-                    &#8250;
+                    info
                   </button>
                 </div>
               );

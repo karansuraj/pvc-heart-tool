@@ -143,6 +143,29 @@ The model switcher UI is disabled per EP physician guidance. The model config sy
 - All clinical data in `src/data/` (single source of truth)
 - R3F patterns: `useFrame` for animation, `useGLTF` for models, `forwardRef` + `useImperativeHandle` for camera control
 
+## Build Verification (MANDATORY)
+
+**Every code change must pass `npm run build` before being committed.** The build runs `tsc -b` (strict TypeScript type-checking) followed by `vite build`. Vercel runs this same command during deployment — if it fails locally, it will fail on Vercel.
+
+### After any code change:
+
+1. Run `npm run build` and confirm exit code 0
+2. Fix all TypeScript errors before committing (unused variables, missing types, bad imports, etc.)
+3. Common pitfalls:
+   - **Removing UI elements** — also remove the associated callbacks, props, and imports that become dead code. TypeScript strict mode treats unused variables as errors (`TS6133`).
+   - **Renaming or moving exports** — update all import sites. The build will catch stale imports.
+   - **Adding dependencies** — run `npm install` first; Vercel installs from `package.json` so any dependency must be listed there.
+4. Only after the build passes: commit, push, and deploy with `vercel --prod --yes`
+
+### Deployment
+
+```bash
+npm run build          # Must pass — exit code 0
+vercel --prod --yes    # Deploy to production
+```
+
+Live at: **https://pvc-heart-tool.vercel.app**
+
 ## Reference Maintenance (MANDATORY)
 
 All peer-reviewed literature, textbook citations, ECG profile sources, and anatomical mapping references are collated in `REFERENCES.md`. **Any agent that adds, modifies, or removes a reference anywhere in this project MUST update `REFERENCES.md` to stay in sync.**

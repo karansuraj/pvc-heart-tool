@@ -14,22 +14,12 @@ function App() {
   const [detailId, setDetailId] = useState<string | null>(null);
   const detailOrigin = detailId ? getOriginById(detailId) : null;
 
-  // Track active model
-  const [currentModelId, setCurrentModelId] = useState(defaultModelId);
-
   // Mapping mode state — session only, export via "Copy as JSON" then paste into modelConfigs.ts
   const [mappingMode, setMappingMode] = useState(false);
   const [pendingPosition, setPendingPosition] = useState<[number, number, number] | null>(null);
   const [mappedPositions, setMappedPositions] = useState<Record<string, [number, number, number] | null>>(
     () => ({ ...getModelConfig(defaultModelId)?.hotspotPositions ?? blankHotspots() })
   );
-
-  // When model changes, load that model's config mappings
-  const handleModelChange = useCallback((modelId: string) => {
-    setCurrentModelId(modelId);
-    setMappedPositions({ ...getModelConfig(modelId)?.hotspotPositions ?? blankHotspots() });
-    setPendingPosition(null);
-  }, []);
 
   const handleMappingClick = useCallback((position: [number, number, number]) => {
     setPendingPosition(position);
@@ -59,8 +49,7 @@ function App() {
         onMappingClick={handleMappingClick}
         mappedPositions={mappedPositions}
         pendingPosition={pendingPosition}
-        modelId={currentModelId}
-        onModelChange={handleModelChange}
+        modelId={defaultModelId}
       />
     </div>
   );

@@ -21,7 +21,6 @@ interface HeartViewerProps {
   mappedPositions?: Record<string, [number, number, number] | null>;
   pendingPosition?: [number, number, number] | null;
   modelId?: string;
-  onModelChange?: (id: string) => void;
 }
 
 export function HeartViewer({
@@ -33,7 +32,6 @@ export function HeartViewer({
   mappedPositions,
   pendingPosition,
   modelId,
-  onModelChange,
 }: HeartViewerProps) {
   const cameraRef = useRef<CameraControllerHandle>(null);
   const [autoRotate, setAutoRotate] = useState(false);
@@ -44,12 +42,7 @@ export function HeartViewer({
   const [focusOnSelect, setFocusOnSelect] = useState(false);
   const [hoverPosition, setHoverPosition] = useState<[number, number, number] | null>(null);
 
-  const [internalModelId, setInternalModelId] = useState(defaultModelId);
-  const currentModelId = modelId ?? internalModelId;
-  const handleModelChange = useCallback((id: string) => {
-    if (onModelChange) onModelChange(id);
-    else setInternalModelId(id);
-  }, [onModelChange]);
+  const currentModelId = modelId ?? defaultModelId;
 
   // Fly camera to selected hotspot position
   useEffect(() => {

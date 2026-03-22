@@ -10,7 +10,7 @@ import { CameraController } from "./CameraController";
 import type { CameraControllerHandle } from "./CameraController";
 import { SurfacePointer } from "./SurfacePointer";
 import { pvcOrigins } from "../data/pvcOrigins";
-import { listModelConfigs, getModelConfig, activeModelId as defaultModelId } from "../data/modelConfigs";
+import { getModelConfig, activeModelId as defaultModelId } from "../data/modelConfigs";
 
 interface HeartViewerProps {
   selectedId: string | null;
@@ -234,37 +234,7 @@ export function HeartViewer({
         />
       )}
 
-      {/* Model selector — top right, offset to avoid collapse button */}
-      <div
-        style={{
-          position: "absolute",
-          top: "8px",
-          right: "36px",
-          zIndex: 10,
-        }}
-      >
-        <select
-          value={currentModelId}
-          onChange={(e) => handleModelChange(e.target.value)}
-          style={{
-            padding: "6px 10px",
-            fontSize: "11px",
-            borderRadius: "6px",
-            border: "1px solid rgba(255,255,255,0.15)",
-            background: "rgba(20, 20, 35, 0.85)",
-            backdropFilter: "blur(12px)",
-            color: "#fff",
-            cursor: "pointer",
-            outline: "none",
-          }}
-        >
-          {listModelConfigs().map((m) => (
-            <option key={m.id} value={m.id} style={{ background: "#1a1a2e" }}>
-              {m.name}
-            </option>
-          ))}
-        </select>
-      </div>
+      {/* Model selector disabled — single model (Interior Heart High Detail) per EP physician guidance */}
 
       {/* Mode indicator */}
       {mappingMode && (

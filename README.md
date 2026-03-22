@@ -34,20 +34,21 @@ src/
 │   ├── ecgProfiles.ts               # Literature-derived per-lead ECG morphology profiles
 │   └── modelConfigs.ts              # Per-model configs: file, hidden meshes, hotspot positions
 public/
-├── models/                          # GLB heart models (Draco-compressed)
-│   ├── university-of-dundee-interior-heart-high-detail.glb  # Default (11MB)
-│   ├── human-heart-internal-structure-3d-model.glb          # (5.3MB)
-│   ├── heart-1_compressed.glb                               # (3.8MB)
-│   └── 3d-edutex-human-heart.glb                            # (14KB)
+├── models/
+│   └── university-of-dundee-interior-heart-high-detail.glb  # Active model (11MB, Draco-compressed)
 ├── ecg/                             # ECG images (pending EP physician sourcing)
 ```
 
-## Swapping Heart Models
+## Heart Model
+
+The active model is **Interior Heart — High Detail** from the [University of Dundee CAHID](https://sketchfab.com/3d-models/interior-heart-high-detail-7a592ce3b0514258ad4c4ef9e18b8f8e). All 23 PVC origin hotspots are mapped to this model. The model switcher UI is currently disabled per EP physician guidance — a single, well-mapped model is preferable to multiple partially-mapped alternatives.
+
+The model config system (`src/data/modelConfigs.ts`) still supports multiple models. To re-enable the switcher or add a new model:
 
 1. Drop a `.glb` file into `public/models/`
 2. Add a config entry in `src/data/modelConfigs.ts`
-3. Set `activeModelId` to the new config's ID
-4. Use **Mapping Mode** to place hotspots (see below)
+3. Map all 23 hotspot positions using Mapping Mode
+4. Re-enable the model selector in `HeartViewer.tsx`
 
 ## Mapping Mode
 
@@ -111,16 +112,7 @@ Or connect the GitHub repo for auto-deploys (Vercel dashboard → Project Settin
 
 ### Model file limits
 
-Vercel has a **100MB per-file limit** for static assets. The `.vercelignore` file excludes any oversized source models. All deployed models use Draco compression to stay well under the limit.
-
-| File | Size | Source |
-|------|------|--------|
-| `university-of-dundee-interior-heart-high-detail.glb` | 11MB (default) | [University of Dundee, CAHID - Interior heart - high detail (Sketchfab)](https://sketchfab.com/3d-models/interior-heart-high-detail-7a592ce3b0514258ad4c4ef9e18b8f8e) |
-| `human-heart-internal-structure-3d-model.glb` | 5.3MB | [Haiqa Arif - Human Heart Internal Structure 3D Model (Sketchfab)](https://sketchfab.com/3d-models/human-heart-internal-structure-3d-model-21d346f72230432e8ed5fe448b03cca5) |
-| `heart-1_compressed.glb` | 3.8MB | <!-- TODO: add source link --> |
-| `3d-edutex-human-heart.glb` | 14KB | [3D EduTex - Human Heart (Sketchfab)](https://sketchfab.com/3d-models/human-heart-f5fa1e719f3d4f28a7c31728a86a9b42) |
-
-All models are Draco-compressed and committed to the repo. Served via Vercel's CDN with 1-year cache headers (`vercel.json`).
+Vercel has a **100MB per-file limit** for static assets. The `.vercelignore` file excludes any oversized source models. The active model is Draco-compressed (11MB) and served via Vercel's CDN with 1-year cache headers (`vercel.json`).
 
 ### Optimizing new models
 
@@ -138,9 +130,22 @@ Live at: **https://pvc-heart-tool.vercel.app**
 
 ## Key Design Decisions
 
+- **Single curated model** — Using only the University of Dundee Interior Heart (high detail) model with all 23 PVC origins mapped. A well-mapped model beats multiple poorly-mapped alternatives.
 - **Hotspot overlay approach** — clickable markers placed at 3D coordinates, not mesh segmentation. Works with any single-mesh heart model. See `Guide-3D-Model-Preparation.md` for alternatives.
-- **Per-model config system** — each model stores its own hotspot positions, hidden meshes, and scale. Swap models without losing mapping work.
+- **Per-model config system** — the infrastructure supports multiple models (configs in `modelConfigs.ts`), but the UI currently shows only one. New models can be added and mapped without changing the architecture.
 - **Clinical accuracy first** — all content is AI-drafted with citations but gated behind `reviewStatus: "draft"` until EP physician validates. See `PVC-Heart-Visualization-Project-Plan.md` for the full content pipeline.
+
+## Other Models (Not Currently Active)
+
+These models have config entries in `src/data/modelConfigs.ts` but are not mapped with PVC hotspot positions and are not shown in the UI. They may be useful for future iterations.
+
+| Model | Size | Source | Notes |
+|-------|------|--------|-------|
+| Human Heart Internal Structure 3D Model | 5.3MB | [Haiqa Arif (Sketchfab)](https://sketchfab.com/3d-models/human-heart-internal-structure-3d-model-21d346f72230432e8ed5fe448b03cca5) | Cut-out section revealing chambers and valves |
+| Heart Model (Medium) | 3.8MB | Source pending | Compressed from `heart-1.glb` |
+| 3D EduTex Human Heart | 14KB | [3D EduTex (Sketchfab)](https://sketchfab.com/3d-models/human-heart-f5fa1e719f3d4f28a7c31728a86a9b42) | External surface only — no interior structures |
+
+See [`heart-models.md`](./heart-models.md) for a full curated list of candidate heart models (including cross-sectional and interior views).
 
 ## Documentation
 

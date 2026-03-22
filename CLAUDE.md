@@ -80,7 +80,7 @@ Other: `his-bundle`, `moderator-band`, `crux`
 
 ### 3D Viewer
 - GLB model loading with auto-center/scale/BVH acceleration
-- Model switcher dropdown (top-right) — 4 models registered, Draco-compressed models supported
+- Single active model (Interior Heart — High Detail); model switcher disabled, config system supports re-enabling
 - Visual settings panel: brightness, exposure, roughness, metalness, opacity, color tint, wireframe, double-sided
 - Camera: smooth zoom (trackpad-optimized), horizontal spin-to-hotspot, save/load default view
 - Hotspots: colored markers per origin, labels on hover, click opens detail view
@@ -108,14 +108,9 @@ Other: `his-bundle`, `moderator-band`, `crux`
 
 ## Models
 
-| File | Size | Config ID | Deployed |
-|------|------|-----------|----------|
-| `university-of-dundee-interior-heart-high-detail.glb` | 11MB | `university-of-dundee-interior-heart-high-detail` | Yes (default) |
-| `human-heart-internal-structure-3d-model.glb` | 34MB | `human-heart-internal-structure-3d-model` | Yes |
-| `heart-1.glb` | 4.2MB | `heart-medium` | Yes |
-| `3d-edutex-human-heart.glb` | 751K | `3d-edutex-human-heart` | Yes |
+**Active model:** `university-of-dundee-interior-heart-high-detail.glb` (11MB, Draco-compressed) — all 23 PVC origin hotspots are mapped to this model.
 
-Models are gitignored and Draco-compressed for deployment. Drei's `useGLTF` has built-in Draco decoder support. See `heart-models.md` for download links and ECG reference sources.
+The model switcher UI is disabled per EP physician guidance. The model config system (`modelConfigs.ts`) still supports multiple models, but only the Interior Heart — High Detail model is shown in the UI. Other model configs remain in code for future use but have no hotspot mappings. See `heart-models.md` for download links and candidate models.
 
 ## What's Done vs What's Remaining
 

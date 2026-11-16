@@ -8,6 +8,13 @@ updates:
     open-pull-requests-limit: 10
     labels:
       - "dependencies"
+    ignore:
+      # TypeScript 7.0.x (native Go compiler) has no JS compiler API, so
+      # typescript-eslint cannot support it (peer range is <6.1.0) and
+      # `npm install` fails with ERESOLVE on Vercel (see PR #47).
+      # 7.1+ is NOT ignored: it is expected to ship the stable API.
+      - dependency-name: "typescript"
+        versions: ["7.0.x"]
     groups:
       # Group minor/patch updates together to reduce PR noise
       production-dependencies:
